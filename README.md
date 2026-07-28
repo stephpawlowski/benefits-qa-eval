@@ -50,6 +50,14 @@ and Plan B doesn't — so a model that's actually reading the documents (rather 
 - **`promptfooconfig.yaml`** — wires it together and grades each response by checking whether the
   model's first line contains the expected fact from the answer key.
 
+## Try it yourself
+
+The [live dashboard](https://benefits.stephpawlowski.com) has a "Try it with your own document"
+panel: paste in any plan document text and ask it a question, and it calls `claude-sonnet-5` for a
+real answer. That call goes through a small Cloudflare Worker I wrote that holds the Anthropic API
+key server-side, so it's never exposed in the browser, and rate-limits requests per visitor. It's a
+real live model call, not a canned response.
+
 ## Setup
 
 Requires [Node.js](https://nodejs.org/) 18+.
