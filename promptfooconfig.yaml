@@ -1,0 +1,22 @@
+description: "Benefits/insurance plan Q&A checker — does the LLM answer coverage questions correctly when given real SBC documents as context?"
+
+prompts:
+  - file://prompt.txt
+
+providers:
+  - anthropic:messages:claude-sonnet-5
+  # - openai:gpt-4o-mini
+  # - openai:gpt-4o
+
+defaultTest:
+  assert:
+    - type: javascript
+      value: |
+        // The model is instructed to put a short, specific answer on the first line.
+        // We grade by normalizing (lowercase, strip $/,/% ) and checking that the first
+        // line contains the expected key fact from our answer key (tests.csv "expected").
+        const norm = (s) => String(s).toLowerCase().replace(/[$,%]/g, '').replace(/\s+/g, ' ').trim();
+        const firstLine = String(output).trim().split('\n')[0];
+        return norm(firstLine).includes(norm(context.vars.expected));
+
+tests: file://tests.csv

@@ -1,0 +1,13 @@
+{
+  "name": "benefits-qa-eval",
+  "version": "1.0.0",
+  "description": "Evaluating whether an LLM answers health plan coverage questions correctly when given real Summary of Benefits and Coverage (SBC) documents as context.",
+  "private": true,
+  "scripts": {
+    "eval": "promptfoo eval",
+    "view": "promptfoo view"
+  },
+  "devDependencies": {
+    "promptfoo": "latest"
+  }
+}
