@@ -88,45 +88,61 @@ npm run view
 
 ## Findings
 
-> **Note:** the numbers below are from the v1 run (the original 50 questions). v2 adds 15
-> adversarial/hallucination-check questions on top of that set (65 total) and hasn't been re-run
-> against the model yet — the dashboard shows those new cases as pending until that happens.
+**Model tested:** `claude-sonnet-5`. This is the v2 run: all 65 questions, including the 15 new
+adversarial/hallucination-check cases.
 
-**Model tested:** `claude-sonnet-5`
+**63 out of 65 correct (96.9%)** — 13 of the 15 new adversarial cases passed outright, and neither of
+the two misses is a real factual error or a hallucination. No sign of the model blending facts between
+the two documents; every cross-plan comparison question (the ones designed to catch that specific
+failure mode) was answered correctly, and the model correctly said "Not stated in the document" on the
+genuinely-absent-fact questions rather than guessing.
 
-**Overall accuracy: 49/50 (98%)** — 20/20 on Plan A questions, 19/20 on Plan B questions, 10/10 on the
-cross-plan comparison questions. No sign of the model blending facts between the two documents; every
-comparison question (the ones designed to catch that specific failure mode) was answered correctly.
-
-### The one "failure"
+### Miss #1: Q50 is a grading-script bug, not a model error
 
 Question 50 asked: *"Which plan type is Plan A, and which plan type is Plan B?"* Expected answer:
-`"Plan A is PPO, Plan B is HDHP"`. The model actually answered correctly:
+`"Plan A is PPO, Plan B is HDHP"`. The model actually answered:
 
-> Plan A: PPO; Plan B: HDHP
+> Plan A — PPO; Plan B — HDHP
 >
 > Plan A's header states "Plan Type: PPO," while Plan B's header states "Plan Type: HDHP."
 
-That's the right fact, just phrased with a colon instead of the word "is." My grading script does a
-normalized substring match, and `"plan a: ppo; plan b: hdhp"` doesn't contain the literal phrase
-`"plan a is ppo, plan b is hdhp"`, so it got marked as a fail even though the model was right.
+That's the right fact, just phrased with a dash instead of the word "is." My grading script does a
+normalized substring match, and `"plan a — ppo; plan b — hdhp"` doesn't contain the literal phrase
+`"plan a is ppo, plan b is hdhp"`, so it's marked as a fail even though the model was right. Same issue
+I flagged in the v1 run, just with a slightly different dash/punctuation choice this time — automated
+substring grading holds up fine for single-fact answers (dollar amounts, percentages, Yes/No) but
+breaks down on any question whose correct answer can be phrased more than one way.
 
-This is actually a useful thing to have caught: it's a **grading harness bug, not a model error** —
-the eval's answer key was too rigid for a question with more than one valid phrasing. The real
-takeaway is that automated substring/exact-match grading works well for single-fact answers (dollar
-amounts, percentages, Yes/No) but breaks down on any question whose correct answer can be phrased more
-than one way. A more robust version of this eval would either restrict itself to single-token answers
-or switch to a model-graded assertion (asking a second LLM call "does this answer convey the same two
-facts as the reference answer?") for any multi-part questions like this one.
+### Miss #2: Q59 is a test-design limitation, not a hallucination
+
+Question 59 asks whether Alabama law affects Plan A's out-of-network coinsurance rate — a detail
+borrowed from Plan B's document (which does have an Alabama-specific carve-out) and applied to a
+question about Plan A (which doesn't have one). Expected answer: `"Not stated in the document"`. The
+model answered:
+
+> No
+>
+> Plan A's Summary of Benefits and Coverage does not mention any Alabama-specific provision affecting
+> its out-of-network coinsurance rate.
+
+The model got the substance exactly right: it correctly noticed the detail doesn't apply to Plan A and
+didn't invent one. But my answer key expected the literal phrase "Not stated in the document," which is
+a stricter standard than the question's own yes/no framing actually calls for — a question asked as
+"does X affect Y?" can be answered "No" by a careful model instead of a "not stated" hedge, and both are
+defensible. This is a limitation of how I wrote this particular adversarial question, distinct from the
+genuinely open-ended absent-fact questions in the set (like "what is the premium?") where "not stated"
+really is the only sensible answer.
 
 ### What this suggests about using an LLM for benefits Q&A in production
 
-With correctly designed grading, this model got all 50 facts right across two real, meaningfully
-different plan documents, including every question that required keeping the two plans straight rather
-than blending them. That's a strong result for a grounded-document Q&A use case. The one asterisk is
-that "the eval said 49/50" and "the model was 49/50 correct" turned out to be two different numbers —
-which is itself the more important lesson for anyone building this kind of check: always spot-read the
-failures before trusting the accuracy percentage, because sometimes the harness is what's wrong.
+With correctly designed grading, this model effectively got all 65 facts right across two real,
+meaningfully different plan documents, including every question built to catch fact-blending,
+invented-plan hallucinations, or getting distracted by an irrelevant narrative detail. That's a strong
+result for a grounded-document Q&A use case. Both "misses" here are about my own eval design (a rigid
+answer-key phrasing, and a question framed more narrowly than my answer key assumed) rather than the
+model getting anything factually wrong — which is itself the more important lesson for anyone building
+this kind of check: always spot-read the failures before trusting the accuracy percentage, because
+sometimes the harness is what's wrong.
 
 ## Project structure
 
