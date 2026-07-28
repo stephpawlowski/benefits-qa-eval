@@ -1,12 +1,21 @@
 # Benefits Q&A Checker
 
 Can an LLM correctly answer coverage questions when given a real health insurance document as its
-only source of truth? This is a small eval built with [promptfoo](https://www.promptfoo.dev/), testing
-an LLM against two real, publicly available Summary of Benefits and Coverage (SBC) documents.
+only source of truth — and just as important, does it know when to say "I don't know" instead of
+guessing? This is a small eval built with [promptfoo](https://www.promptfoo.dev/), testing an LLM
+against two real, publicly available Summary of Benefits and Coverage (SBC) documents.
 
 This is the closest of my portfolio evals to real retrieval/RAG evaluation work: the model is given
 source documents as context and graded on whether it extracts the right facts from them, not on
 outside medical knowledge.
+
+This is version 2 of the project. Version 1 had 50 questions, all answerable from the documents.
+Version 2 adds 15 adversarial/hallucination-check questions that don't have a clean answer sitting in
+the text — genuinely missing facts (a premium amount, a phone number), invented plan names that don't
+exist in either document, and questions that borrow one plan's specific detail (a deductible amount, a
+regional coinsurance carve-out) and ask about the other plan, to see whether the model notices the
+detail doesn't actually appear there. The prompt already instructs the model to say "Not stated in the
+document" instead of guessing — these 15 cases are what actually puts that instruction to the test.
 
 ## The documents
 
@@ -28,9 +37,13 @@ and Plan B doesn't — so a model that's actually reading the documents (rather 
 
 - **`plan-a.md`** / **`plan-b.md`** — the two source documents, condensed to their factual content
   (deductibles, copays, coinsurance, exclusions, coverage examples), with links to the originals.
-- **`tests.csv`** — 50 questions with answers I verified directly against the source PDFs: 20 about
-  Plan A only, 20 about Plan B only, and 10 that require comparing the two (e.g., "which plan requires
-  a referral to see a specialist?").
+- **`tests.csv`** — 65 questions with answers I verified directly against the source PDFs: the original
+  50 (20 about Plan A only, 20 about Plan B only, 10 that require comparing the two, e.g. "which plan
+  requires a referral to see a specialist?"), plus 15 new adversarial/hallucination-check questions
+  (5 asking about facts genuinely absent from both documents, 5 that plant one plan's specific detail
+  into a question about the other plan, 2 asking about invented plan names that don't exist, 2 wrapped
+  in an irrelevant narrative red herring, and 1 that's genuinely ambiguous rather than answerable either
+  way).
 - **`prompt.txt`** — both documents pasted in as context, followed by one question, with instructions
   to answer in a short first line (a dollar amount, percentage, Yes/No, or plan name) plus a one-sentence
   citation.
@@ -60,7 +73,7 @@ To test a different model, edit the `providers:` list in `promptfooconfig.yaml`.
 npm run eval
 ```
 
-Runs all 50 questions and prints a pass/fail summary with accuracy. To also save the full results to a
+Runs all 65 questions and prints a pass/fail summary with accuracy. To also save the full results to a
 file (needed if you want to build something like a results dashboard from it):
 
 ```bash
@@ -74,6 +87,10 @@ npm run view
 ```
 
 ## Findings
+
+> **Note:** the numbers below are from the v1 run (the original 50 questions). v2 adds 15
+> adversarial/hallucination-check questions on top of that set (65 total) and hasn't been re-run
+> against the model yet — the dashboard shows those new cases as pending until that happens.
 
 **Model tested:** `claude-sonnet-5`
 
@@ -117,7 +134,7 @@ failures before trusting the accuracy percentage, because sometimes the harness 
 benefits-qa-eval/
 ├── plan-a.md               # Source document 1 (CMS official PPO sample SBC)
 ├── plan-b.md               # Source document 2 (Auburn University HDHP SBC)
-├── tests.csv                # 50 questions + answer key (id, question, expected, source)
+├── tests.csv                # 65 questions + answer key (id, question, expected, source)
 ├── prompt.txt                # Prompt template: both documents + one question
 ├── promptfooconfig.yaml       # promptfoo config wiring prompt + tests + grading
 ├── package.json

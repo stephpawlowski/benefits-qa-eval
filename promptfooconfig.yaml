@@ -1,4 +1,4 @@
-description: "Benefits/insurance plan Q&A checker — does the LLM answer coverage questions correctly when given real SBC documents as context?"
+description: "Benefits/insurance plan Q&A checker (v2) — does the LLM answer coverage questions correctly when given real SBC documents as context, and does it correctly say 'Not stated in the document' instead of guessing? 65 test questions (50 v1 cases plus 15 adversarial/hallucination-check cases)."
 
 prompts:
   - file://prompt.txt
