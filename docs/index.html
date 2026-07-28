@@ -175,6 +175,33 @@
 
   footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
   footer a { color: var(--accent); }
+
+  .qa-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 24px 0 28px; box-shadow: 0 2px 10px rgba(61,104,112,0.05); }
+  .qa-panel h2 { font-family: var(--font-heading); font-weight: 600; font-size: 1.3rem; color: var(--accent); margin: 0 0 6px; }
+  .qa-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; max-width: 700px; }
+  .qa-textarea {
+    width: 100%; min-height: 140px; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 0.85rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; margin-bottom: 4px;
+  }
+  .qa-char-count { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 10px; }
+  .qa-char-count.over { color: var(--fail); }
+  .qa-input {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    padding: 9px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 12px;
+  }
+  .qa-btn {
+    background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 8px;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  }
+  .qa-btn:hover { opacity: 0.92; }
+  .qa-btn:disabled { opacity: 0.5; cursor: default; }
+  .qa-note { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+  .qa-result { display: none; margin-top: 14px; padding: 14px 16px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
+  .qa-result.show { display: block; }
+  .qa-answer { font-size: 1.05rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .qa-explanation { font-size: 0.88rem; color: var(--text); }
+  .qa-error { color: var(--fail); font-size: 0.85rem; }
 </style>
 </head>
 <body>
@@ -217,6 +244,22 @@
     <b>Note on Q51–65:</b> these are new adversarial/hallucination-check cases (v2) — questions with no
     answer in the documents, invented plan names, and details borrowed from one plan and applied to the
     other. They're shown as PENDING because they haven't been run against the model yet.
+  </div>
+
+  <div class="qa-panel" id="qa-panel">
+    <h2>Try it with your own document</h2>
+    <div class="qa-sub">
+      Paste in any Summary of Benefits and Coverage (or similar plan document) and ask it a question.
+      This sends your document and question to <code>claude-sonnet-5</code> through a rate-limited
+      proxy — no API key needed on your end, and nothing is stored. The model is instructed to answer
+      only from what you paste in, and to say "Not stated in the document" rather than guess.
+    </div>
+    <textarea class="qa-textarea" id="qa-document" placeholder="Paste plan document text here (up to 8,000 characters)…" maxlength="8000"></textarea>
+    <div class="qa-char-count" id="qa-doc-count">0 / 8,000 characters</div>
+    <input type="text" class="qa-input" id="qa-question" placeholder="Ask a question about this document…" maxlength="500">
+    <button class="qa-btn" id="qa-ask-btn">Ask</button>
+    <div class="qa-note">Limited to a handful of requests per visitor per hour.</div>
+    <div class="qa-result" id="qa-result"></div>
   </div>
 
   <div class="stats" id="stats"></div>
@@ -332,6 +375,68 @@ document.getElementById('search').addEventListener('input', (e) => {
 
 renderStats();
 renderRows('all', '');
+
+// --- Live "ask your own document" ---
+const EVAL_PROXY_URL = 'https://eval-proxy.stephrpawlowski.workers.dev';
+
+const qaDocEl = document.getElementById('qa-document');
+const qaDocCountEl = document.getElementById('qa-doc-count');
+qaDocEl.addEventListener('input', () => {
+  const len = qaDocEl.value.length;
+  qaDocCountEl.textContent = len.toLocaleString() + ' / 8,000 characters';
+  qaDocCountEl.classList.toggle('over', len > 8000);
+});
+
+async function askDocument() {
+  const btn = document.getElementById('qa-ask-btn');
+  const resultEl = document.getElementById('qa-result');
+  const document_ = qaDocEl.value.trim();
+  const question = document.getElementById('qa-question').value.trim();
+
+  resultEl.classList.add('show');
+  if (!document_) {
+    resultEl.innerHTML = '<div class="qa-error">Paste in a document first.</div>';
+    return;
+  }
+  if (!question) {
+    resultEl.innerHTML = '<div class="qa-error">Ask a question first.</div>';
+    return;
+  }
+  if (document_.length > 8000) {
+    resultEl.innerHTML = '<div class="qa-error">Document is too long — please keep it under 8,000 characters.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Asking…';
+  resultEl.innerHTML = '<div>Calling claude-sonnet-5…</div>';
+
+  try {
+    const res = await fetch(EVAL_PROXY_URL + '/benefits-qa', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ document: document_, question }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      resultEl.innerHTML = `<div class="qa-error">${escapeHtml(data.error || 'Something went wrong. Try again shortly.')}</div>`;
+      return;
+    }
+
+    resultEl.innerHTML = `
+      <div class="qa-answer">${escapeHtml(data.answer || '')}</div>
+      <div class="qa-explanation">${escapeHtml(data.explanation || '')}</div>
+    `;
+  } catch (err) {
+    resultEl.innerHTML = '<div class="qa-error">Request failed — the proxy may be temporarily unavailable.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ask';
+  }
+}
+
+document.getElementById('qa-ask-btn').addEventListener('click', askDocument);
 </script>
 </body>
 </html>
