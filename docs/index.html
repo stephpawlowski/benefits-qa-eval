@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benefits Q&A Checker — Eval Results</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #161920;
+    --panel-2: #1c2029;
+    --border: #2a2f3a;
+    --text: #e8eaed;
+    --muted: #9aa1ac;
+    --accent: #7c9eff;
+    --pass: #4caf7d;
+    --pass-bg: rgba(76,175,125,0.12);
+    --fail: #e0654f;
+    --fail-bg: rgba(224,101,79,0.12);
+    --plana: #7c9eff;
+    --planb: #d8a83e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 40px 20px 80px; }
+  header { margin-bottom: 32px; }
+  h1 { font-size: 1.6rem; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); font-size: 0.95rem; max-width: 680px; }
+  .subtitle a { color: var(--accent); }
+
+  .note {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--planb);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 20px 0 28px;
+  }
+  .note b { color: var(--text); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 28px 0;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .stat .num { font-size: 1.7rem; font-weight: 600; }
+  .stat .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .stat.accuracy .num { color: var(--pass); }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .controls input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .controls input[type="text"]::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .filter-btn.active { color: var(--text); border-color: var(--accent); background: var(--panel-2); }
+  .filter-btn:hover { color: var(--text); }
+
+  .row {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .row-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+  }
+  .row-head:hover { background: var(--panel-2); }
+  .row-id { color: var(--muted); font-size: 0.8rem; width: 26px; flex-shrink: 0; }
+  .row-q { flex: 1; font-size: 0.88rem; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .badge.pass { background: var(--pass-bg); color: var(--pass); }
+  .badge.fail { background: var(--fail-bg); color: var(--fail); }
+  .exp {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .chev { color: var(--muted); font-size: 0.75rem; transition: transform 0.15s; flex-shrink: 0; }
+  .row.open .chev { transform: rotate(90deg); }
+
+  .row-body {
+    display: none;
+    padding: 4px 14px 16px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .row.open .row-body { display: block; }
+  .field { margin-top: 12px; }
+  .field .k { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .field .v { font-size: 0.88rem; white-space: pre-wrap; }
+  .field .v.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 0.9rem; }
+
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Benefits Q&A Checker</h1>
+    <div class="subtitle">
+      50 questions answered strictly from two real Summary of Benefits and Coverage (SBC) documents
+      (an official CMS reference PPO plan, and Auburn University's actual 2025 HDHP plan), scored
+      against an answer key verified against the source PDFs. Model tested: <code>claude-sonnet-5</code>.
+      Full write-up on <a href="https://github.com/stephpawlowski/benefits-qa-eval" target="_blank" rel="noopener">GitHub</a>.
+    </div>
+  </header>
+
+  <div class="note">
+    <b>Note on Q50:</b> it's marked FAIL below because of a grading-script bug, not a model error — the
+    model answered "Plan A: PPO; Plan B: HDHP" (correct), but the answer key only matched the exact
+    phrase "Plan A is PPO, Plan B is HDHP". See the README for the full explanation.
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search questions, answers…">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="pass">Passed</button>
+    <button class="filter-btn" data-filter="fail">Failed</button>
+  </div>
+
+  <div id="rows"></div>
+  <div class="empty" id="empty" style="display:none;">No matching questions.</div>
+
+  <footer>
+    Static page, no live API calls. Data generated by <a href="https://www.promptfoo.dev/" target="_blank" rel="noopener">promptfoo</a>.
+    Rebuild by re-running the eval and regenerating this page.
+  </footer>
+</div>
+
+<script>
+const DATA = [{"id": 1, "question": "For Plan A (the PPO plan), what is the individual deductible?", "expected": "$500", "source": "Plan A: overall deductible $500/individual", "output": "$500\n\nThis is stated in Plan A's SBC under \"Overall deductible\" as \"$500/individual or $1,000/family.\"", "answer": "$500", "pass": true}, {"id": 2, "question": "What is the family deductible for Plan A?", "expected": "$1,000", "source": "Plan A: overall deductible $1,000/family", "output": "$1,000\n\nPlan A's overall deductible section states $500/individual or $1,000/family.", "answer": "$1,000", "pass": true}, {"id": 3, "question": "Under Plan A, are preventive care and primary care services covered before you meet your deductible?", "expected": "Yes", "source": "Plan A: Yes, preventive and primary care covered before deductible", "output": "Yes\nPlan A's document states \"Preventive care and primary care services are covered before you meet your deductible.\"", "answer": "Yes", "pass": true}, {"id": 4, "question": "What is the specific deductible for prescription drug coverage under Plan A?", "expected": "$300", "source": "Plan A: $300 for prescription drug coverage", "output": "$300\n\nThis is stated in Plan A's \"Other deductibles\" section, which specifies a $300 deductible for prescription drug coverage.", "answer": "$300", "pass": true}, {"id": 5, "question": "What is the specific deductible for occupational therapy services under Plan A?", "expected": "$300", "source": "Plan A: $300 for occupational therapy services", "output": "$300\nPlan A lists \"$300 for occupational therapy services\" under its \"Other deductibles\" section.", "answer": "$300", "pass": true}, {"id": 6, "question": "What is the in-network individual out-of-pocket limit under Plan A?", "expected": "$2,500", "source": "Plan A: network providers $2,500 individual", "output": "$2,500\n\nThis is stated in Plan A's out-of-pocket limit section as the network individual out-of-pocket limit.", "answer": "$2,500", "pass": true}, {"id": 7, "question": "What is the out-of-network family out-of-pocket limit under Plan A?", "expected": "$8,000", "source": "Plan A: out-of-network $8,000 family", "output": "$8,000\nThis is stated in Plan A's Out-of-pocket limit section, which lists the out-of-network family limit as $8,000.", "answer": "$8,000", "pass": true}, {"id": 8, "question": "Does Plan A require a referral to see a specialist?", "expected": "Yes", "source": "Plan A: Yes, referral required before seeing a specialist", "output": "Yes\n\nPlan A's SBC explicitly states \"Referral required to see a specialist: Yes.\"", "answer": "Yes", "pass": true}, {"id": 9, "question": "What is the network copay for a primary care visit to treat an injury or illness under Plan A?", "expected": "$35", "source": "Plan A: $35 copay/office visit", "output": "$35 copay\n\nPlan A's SBC lists the primary care visit (network) as $35 copay plus 20% coinsurance for other outpatient services, with the deductible not applying to this copay.", "answer": "$35 copay", "pass": true}, {"id": 10, "question": "What is the network copay for a specialist visit under Plan A?", "expected": "$50", "source": "Plan A: $50 copay/visit", "output": "$50 copay\nPlan A's SBC states specialist visit costs \"$50 copay\" in-network, before out-of-network coinsurance of 40%.", "answer": "$50 copay", "pass": true}, {"id": 11, "question": "Under Plan A, is preauthorization required for a specialist visit?", "expected": "Yes", "source": "Plan A: preauthorization is required for specialist visit", "output": "Yes\nPlan A's specialist visit entry states \"Preauthorization required (or benefits reduced 50%).\"", "answer": "Yes", "pass": true}, {"id": 12, "question": "What is the network cost for preventive care/screening/immunization under Plan A?", "expected": "No charge", "source": "Plan A: No charge (network)", "output": "No charge\n\nPlan A's Network column for \"Preventive care/screening/immunization\" lists \"No charge\" (out-of-network is 40% coinsurance).", "answer": "No charge", "pass": true}, {"id": 13, "question": "What is the network copay for a diagnostic test (x-ray, blood work) under Plan A?", "expected": "$10", "source": "Plan A: $10 copay/test", "output": "$10 copay\n\nPlan A's SBC lists the diagnostic test (x-ray, blood work) network cost as a $10 copay.", "answer": "$10 copay", "pass": true}, {"id": 14, "question": "What is the network copay for imaging (CT/PET scans, MRIs) under Plan A?", "expected": "$50", "source": "Plan A: $50 copay/test", "output": "$50 copay\n\nThis is stated in Plan A's SBC under the Imaging (CT/PET/MRI) line, which lists \"$50 copay\" for network coverage.", "answer": "$50 copay", "pass": true}, {"id": 15, "question": "What is the network copay for generic (Tier 1) drugs under Plan A?", "expected": "$10", "source": "Plan A: $10 copay/prescription", "output": "$10 copay\n\nPlan A's benefits table lists Generic drugs (Tier 1) as a $10 copay for network coverage.", "answer": "$10 copay", "pass": true}, {"id": 16, "question": "What is the network coinsurance for specialty (Tier 4) drugs under Plan A?", "expected": "50%", "source": "Plan A: 50% coinsurance (network) for Tier 4 specialty drugs", "output": "50%\n\nUnder Plan A's prescription drug section, Specialty drugs (Tier 4) network coinsurance is listed as 50% (70% out-of-network).", "answer": "50%", "pass": true}, {"id": 17, "question": "How many rehabilitation services visits per year are covered under Plan A?", "expected": "60", "source": "Plan A: limit 60 visits/year", "output": "60\n\nPlan A's Rehabilitation services benefit lists a limit of 60 visits/year (covering PT, speech, and OT).", "answer": "60", "pass": true}, {"id": 18, "question": "Does Plan A cover routine eye care for adults?", "expected": "No", "source": "Plan A: Routine eye care (Adult) is an excluded service", "output": "No\n\nPlan A's Excluded Services list explicitly includes \"Routine eye care (Adult),\" meaning it is not covered.", "answer": "No", "pass": true}, {"id": 19, "question": "In the Peg is Having a Baby coverage example under Plan A, how much would Peg pay in total?", "expected": "$2,560", "source": "Plan A: The total Peg would pay is $2,560", "output": "$2,560\n\nThis figure comes from Plan A's \"Peg is Having a Baby\" coverage example, which totals her deductibles ($500), copayments ($200), coinsurance ($1,800), and limits/exclusions ($60).", "answer": "$2,560", "pass": true}, {"id": 20, "question": "In the Managing Joe's Type 2 Diabetes coverage example under Plan A, what is the total example cost of care before Joe's share is applied?", "expected": "$5,600", "source": "Plan A: Total Example Cost $5,600", "output": "$5,600\n\nThis is the Total Example Cost stated for \"Managing Joe's Type 2 Diabetes\" under Plan A's Coverage Examples section.", "answer": "$5,600", "pass": true}, {"id": 21, "question": "For Plan B (the Auburn University HDHP), what is the in-network self-only deductible?", "expected": "$2,500", "source": "Plan B: $2,500/self-only in-network", "output": "$2,500\n\nThis is stated in Plan B's SBC under \"Overall deductible\" as the in-network self-only deductible.", "answer": "$2,500", "pass": true}, {"id": 22, "question": "What is the in-network family deductible for Plan B?", "expected": "$5,000", "source": "Plan B: $5,000/family in-network", "output": "$5,000\n\nAccording to Plan B's SBC, the overall in-network deductible is $5,000 for family coverage (with $2,500 for self-only).", "answer": "$5,000", "pass": true}, {"id": 23, "question": "What is the out-of-network self-only deductible for Plan B?", "expected": "$5,000", "source": "Plan B: $5,000/self-only out-of-network", "output": "$5,000\n\nPlan B's overall deductible section states the out-of-network deductible is $5,000/self-only (or $10,000/family).", "answer": "$5,000", "pass": true}, {"id": 24, "question": "Does Plan B have separate deductibles for specific services like prescription drugs?", "expected": "No", "source": "Plan B: No, you don't have to meet a deductible for specific services", "output": "No\n\nPlan B explicitly states \"Other deductibles for specific services: No,\" meaning there are no separate deductibles for services like prescription drugs.", "answer": "No", "pass": true}, {"id": 25, "question": "What is the in-network out-of-pocket limit for family coverage under Plan B?", "expected": "$10,000", "source": "Plan B: in-network $10,000 family", "output": "$10,000\n\nPlan B's SBC states the in-network out-of-pocket limit is $5,000 self-only / $10,000 family.", "answer": "$10,000", "pass": true}, {"id": 26, "question": "Does Plan B require a referral to see a specialist?", "expected": "No", "source": "Plan B: No, you can see the specialist you choose without a referral", "output": "No\n\nPlan B's document states \"Referral required to see a specialist: No.\"", "answer": "No", "pass": true}, {"id": 27, "question": "What is the network coinsurance for a primary care visit under Plan B?", "expected": "20%", "source": "Plan B: 20% coinsurance", "output": "20%\n\nUnder Plan B (Auburn University HDHP Plan), the primary care visit network cost sharing is listed as 20% coinsurance.", "answer": "20%", "pass": true}, {"id": 28, "question": "What is the network coinsurance for a specialist visit under Plan B?", "expected": "20%", "source": "Plan B: 20% coinsurance", "output": "20%\n\nUnder Plan B (Auburn University HDHP), the specialist visit network cost is 20% coinsurance after deductible.", "answer": "20%", "pass": true}, {"id": 29, "question": "What is the network copay for Tier 1 prescription drugs at retail under Plan B?", "expected": "$15", "source": "Plan B: Tier 1 drugs $15 copay (retail)", "output": "$15 copay\n\nThis is the network (in-network) retail copay for Tier 1 drugs under Plan B, as stated in the \"What you pay\" section of the Auburn University HDHP SBC.", "answer": "$15 copay", "pass": true}, {"id": 30, "question": "What is the network cost for Tier 5 preferred specialty drugs at retail under Plan B?", "expected": "25% coinsurance", "source": "Plan B: Tier 5 drugs 25% coinsurance (retail)", "output": "25% coinsurance\nPlan B's SBC lists Tier 5 (preferred specialty) drugs at 25% coinsurance for network (retail).", "answer": "25% coinsurance", "pass": true}, {"id": 31, "question": "Under Plan B's TigerMeds program, what copay does Auburn University waive for Tier 1 medications filled at the Auburn University Pharmaceutical Care Center?", "expected": "$15", "source": "Plan B: Auburn waives the $15 copay for Tier 1 medications at AUPCC", "output": "$15\n\nUnder Plan B's TigerMeds program, the SBC states Auburn University waives the $15 copay for Tier 1 drugs (and reduces Tier 2 to $10) when filled at the AUPCC.", "answer": "$15", "pass": true}, {"id": 32, "question": "Are outpatient mental health or behavioral health services covered under Plan B?", "expected": "Not Covered", "source": "Plan B: Outpatient services Not Covered", "output": "Not Covered\n\nPlan B's SBC states that mental health/behavioral health/substance abuse outpatient services are \"Not Covered\" for both network and out-of-network.", "answer": "Not Covered", "pass": true}, {"id": 33, "question": "Is skilled nursing care covered under Plan B?", "expected": "Not Covered", "source": "Plan B: Skilled nursing care Not Covered, member pays 100%", "output": "Not Covered\n\nUnder Plan B (Auburn University HDHP Plan), the SBC states \"Skilled nursing care: Not Covered \u2014 member pays 100%.\"", "answer": "Not Covered", "pass": true}, {"id": 34, "question": "Are children's glasses covered under Plan B?", "expected": "Not Covered", "source": "Plan B: Children's glasses Not Covered, member pays 100%", "output": "Not Covered\n\nPlan B's Summary of Benefits and Coverage explicitly states \"Children's glasses: Not Covered \u2014 member pays 100%.\"", "answer": "Not Covered", "pass": true}, {"id": 35, "question": "What is the maximum combined annual visit limit for occupational, physical, and speech therapy under Plan B's rehabilitation services?", "expected": "30", "source": "Plan B: combined maximum of 30 visits/year", "output": "30 visits/year\n\nThis is stated in Plan B's Rehabilitation services line, which specifies a combined maximum of 30 visits/year for occupational, physical, and speech therapy.", "answer": "30 visits/year", "pass": true}, {"id": 36, "question": "In Alabama, what is the out-of-network coinsurance rate for a primary care visit under Plan B, instead of the standard 40%?", "expected": "50%", "source": "Plan B: in Alabama, out-of-network coinsurance is 50%", "output": "50%\n\nIn Plan B, the primary care visit line states \"in Alabama, out-of-network is 50%\" instead of the standard 40% coinsurance.", "answer": "50%", "pass": true}, {"id": 37, "question": "Does Plan B cover chiropractic care?", "expected": "Yes", "source": "Plan B: Chiropractic care listed under Other Covered Services", "output": "Yes\n\nPlan B's \"Other covered services (limitations may apply)\" section lists Chiropractic care as covered, subject to limitations.", "answer": "Yes", "pass": true}, {"id": 38, "question": "In the Peg is Having a Baby coverage example under Plan B, how much would Peg pay in total?", "expected": "$4,570", "source": "Plan B: The total Peg would pay is $4,570", "output": "$4,570\n\nThis figure comes from Plan B's (Auburn University HDHP) \"Peg is Having a Baby\" coverage example, which lists Deductibles $2,500, Copayments $10, Coinsurance $2,000, and Limits/exclusions $60, totaling $4,570.", "answer": "$4,570", "pass": true}, {"id": 39, "question": "In the Mia's Simple Fracture coverage example under Plan B, what coinsurance amount did Mia pay?", "expected": "$70", "source": "Plan B: Mia's coinsurance $70", "output": "$70\n\nUnder Plan B (Auburn University HDHP), the Mia's Simple Fracture coverage example lists Coinsurance as $70.", "answer": "$70", "pass": true}, {"id": 40, "question": "Under Plan B, is Assisted Reproductive Technology covered as part of infertility treatment?", "expected": "No", "source": "Plan B: Infertility treatment covered but Assisted Reproductive Technology is NOT covered", "output": "No\n\nPlan B's \"Other covered services\" section lists Infertility treatment as covered but explicitly notes that Assisted Reproductive Technology is NOT covered.", "answer": "No", "pass": true}, {"id": 41, "question": "Which plan has the lower individual/self-only deductible, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A $500 vs Plan B $2,500 self-only deductible", "output": "Plan A\n\nPlan A's overall deductible is $500/individual, which is lower than Plan B's $2,500/self-only in-network deductible.", "answer": "Plan A", "pass": true}, {"id": 42, "question": "Which plan requires a referral to see a specialist, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A requires referral; Plan B does not", "output": "Plan A\n\nPlan A states \"Referral required to see a specialist: Yes,\" while Plan B states \"Referral required to see a specialist: No.\"", "answer": "Plan A", "pass": true}, {"id": 43, "question": "Which plan covers mental health and substance abuse outpatient services, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A covers it ($35 copay+20%); Plan B does not cover it", "output": "Plan A\n\nPlan A covers mental health/behavioral health/substance abuse outpatient services ($35 copay + 20% coinsurance in-network / 40% out-of-network), while Plan B lists these services as \"Not Covered\" (network and out-of-network).", "answer": "Plan A", "pass": true}, {"id": 44, "question": "Which plan covers skilled nursing care, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A covers 60 visits/year; Plan B does not cover it", "output": "Plan A\n\nPlan A covers skilled nursing care at 20% (network)/40% (out-of-network) coinsurance with a 60-visit/year limit, while Plan B states skilled nursing care is \"Not Covered \u2014 member pays 100%.\"", "answer": "Plan A", "pass": true}, {"id": 45, "question": "Which plan covers children's glasses, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A covers one pair/year (20% coinsurance); Plan B does not cover it", "output": "Plan A\n\nPlan A covers children's glasses with 20% coinsurance in-network (limited to one pair/year), while Plan B states children's glasses are \"Not Covered \u2014 member pays 100%.\"", "answer": "Plan A", "pass": true}, {"id": 46, "question": "Does Plan A or Plan B have more prescription drug pricing tiers?", "expected": "Plan B", "source": "Plan A has 4 drug tiers; Plan B has 5 drug tiers", "output": "Plan B\n\nPlan B lists five prescription drug tiers (Tier 1\u2013Tier 5, including preferred specialty), while Plan A lists only four tiers (Tier 1\u2013Tier 4).", "answer": "Plan B", "pass": true}, {"id": 47, "question": "Which plan explicitly lists acupuncture as an excluded service rather than an other covered service, Plan A or Plan B?", "expected": "Plan B", "source": "Plan A lists acupuncture under Other Covered Services; Plan B lists it under Excluded Services", "output": "Plan B\n\nPlan B's Excluded services list explicitly includes \"Acupuncture,\" whereas Plan A lists acupuncture under \"Other covered services (if prescribed for rehabilitation).\"", "answer": "Plan B", "pass": true}, {"id": 48, "question": "Between the two plans, which has the higher in-network family out-of-pocket limit, Plan A or Plan B?", "expected": "Plan B", "source": "Plan A network family OOP $5,000; Plan B network family OOP $10,000", "output": "Plan B\nPlan B's in-network family out-of-pocket limit is $10,000, compared to Plan A's $5,000, as stated in each plan's \"Out-of-pocket limit\" section.", "answer": "Plan B", "pass": true}, {"id": 49, "question": "For the Managing Joe's Type 2 Diabetes coverage example, which plan resulted in a lower total out-of-pocket cost for Joe, Plan A or Plan B?", "expected": "Plan A", "source": "Plan A: Joe pays $1,820; Plan B: Joe pays $2,910", "output": "Plan A\n\nPlan A's total for Joe was $1,820 versus Plan B's $2,910, as stated in each plan's Managing Joe's Type 2 Diabetes coverage example.", "answer": "Plan A", "pass": true}, {"id": 50, "question": "Which plan type is Plan A, and which plan type is Plan B?", "expected": "Plan A is PPO, Plan B is HDHP", "source": "Plan A Plan Type: PPO; Plan B Plan Type: HDHP", "output": "Plan A: PPO; Plan B: HDHP\n\nPlan A's header states \"Plan Type: PPO,\" while Plan B's header states \"Plan Type: HDHP.\"", "answer": "Plan A: PPO; Plan B: HDHP", "pass": false}];
+
+function renderStats() {
+  const total = DATA.length;
+  const passed = DATA.filter(d => d.pass).length;
+  const failed = total - passed;
+  const acc = ((passed / total) * 100).toFixed(0);
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat accuracy"><div class="num">${acc}%</div><div class="label">Accuracy</div></div>
+    <div class="stat"><div class="num">${total}</div><div class="label">Questions</div></div>
+    <div class="stat"><div class="num" style="color:var(--pass)">${passed}</div><div class="label">Passed</div></div>
+    <div class="stat"><div class="num" style="color:var(--fail)">${failed}</div><div class="label">Failed</div></div>
+  `;
+}
+
+function renderRows(filter, query) {
+  const rowsEl = document.getElementById('rows');
+  const q = (query || '').toLowerCase().trim();
+
+  const filtered = DATA.filter(d => {
+    if (filter === 'pass' && !d.pass) return false;
+    if (filter === 'fail' && d.pass) return false;
+    if (q) {
+      const hay = (d.question + ' ' + d.expected + ' ' + d.output).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('empty').style.display = filtered.length ? 'none' : 'block';
+
+  rowsEl.innerHTML = filtered.map(d => `
+    <div class="row" data-id="${d.id}">
+      <div class="row-head" onclick="this.parentElement.classList.toggle('open')">
+        <span class="row-id">#${d.id}</span>
+        <span class="row-q">${escapeHtml(d.question)}</span>
+        <span class="exp" title="${escapeHtml(d.expected)}">expected: ${escapeHtml(d.expected)}</span>
+        <span class="badge ${d.pass ? 'pass' : 'fail'}">${d.pass ? 'PASS' : 'FAIL'}</span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="row-body">
+        <div class="field">
+          <div class="k">Answer key source</div>
+          <div class="v">${escapeHtml(d.source)}</div>
+        </div>
+        <div class="field">
+          <div class="k">Model output</div>
+          <div class="v mono">${escapeHtml(d.output)}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+let currentFilter = 'all';
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderRows(currentFilter, document.getElementById('search').value);
+  });
+});
+document.getElementById('search').addEventListener('input', (e) => {
+  renderRows(currentFilter, e.target.value);
+});
+
+renderStats();
+renderRows('all', '');
+</script>
+</body>
+</html>
