@@ -1,7 +1,7 @@
-description: "Benefits/insurance plan Q&A checker (v2) — does the LLM answer coverage questions correctly when given real SBC documents as context, and does it correctly say 'Not stated in the document' instead of guessing? 65 test questions (50 v1 cases plus 15 adversarial/hallucination-check cases)."
+description: "Benefits/insurance plan Q&A checker (v3, RAG) — does the LLM answer coverage questions correctly when given retrieved excerpts (not full documents) from a 6-plan SBC library, and does retrieval itself pull back the right document? Chunks are embedded with Voyage AI and retrieved via cosine similarity (scripts/retrieval.js) instead of pasting all documents into every prompt."
 
 prompts:
-  - file://prompt.txt
+  - file://scripts/promptfoo-prompt.js
 
 providers:
   - anthropic:messages:claude-sonnet-5
@@ -11,6 +11,7 @@ providers:
 defaultTest:
   assert:
     - type: javascript
+      metric: answer_correct
       value: |
         // The model is instructed to put a short, specific answer on the first line.
         // We grade by normalizing (lowercase, strip $/,/% ) and checking that the first
@@ -18,5 +19,8 @@ defaultTest:
         const norm = (s) => String(s).toLowerCase().replace(/[$,%]/g, '').replace(/\s+/g, ' ').trim();
         const firstLine = String(output).trim().split('\n')[0];
         return norm(firstLine).includes(norm(context.vars.expected));
+    - type: javascript
+      metric: retrieval_correct
+      value: file://scripts/assert-retrieval.js
 
 tests: file://tests.csv
