@@ -1,62 +1,93 @@
 # Benefits Q&A Checker
 
-Can an LLM correctly answer coverage questions when given a real health insurance document as its
-only source of truth — and just as important, does it know when to say "I don't know" instead of
-guessing? This is a small eval built with [promptfoo](https://www.promptfoo.dev/), testing an LLM
-against two real, publicly available Summary of Benefits and Coverage (SBC) documents.
+Can an LLM correctly answer coverage questions when given real health insurance documents as its only
+source of truth — and just as important, does it know when to say "I don't know" instead of guessing?
+This is a small eval built with [promptfoo](https://www.promptfoo.dev/), testing an LLM against a
+library of real, publicly available Summary of Benefits and Coverage (SBC) documents.
 
-This is the closest of my portfolio evals to real retrieval/RAG evaluation work: the model is given
-source documents as context and graded on whether it extracts the right facts from them, not on
-outside medical knowledge.
-
-This is version 2 of the project. Version 1 had 50 questions, all answerable from the documents.
-Version 2 adds 15 adversarial/hallucination-check questions that don't have a clean answer sitting in
-the text — genuinely missing facts (a premium amount, a phone number), invented plan names that don't
-exist in either document, and questions that borrow one plan's specific detail (a deductible amount, a
-regional coinsurance carve-out) and ask about the other plan, to see whether the model notices the
-detail doesn't actually appear there. The prompt already instructs the model to say "Not stated in the
-document" instead of guessing — these 15 cases are what actually puts that instruction to the test.
+This is version 3 of the project, and the first version that's actually retrieval-augmented generation
+(RAG) rather than long-context stuffing. Versions 1 and 2 pasted both source documents into every
+prompt in full — that worked fine at 2 documents, but it isn't how RAG systems actually work, and it
+stops being practical once the document set grows. Version 3 expands the library to 6 real plan
+documents and switches to real retrieval: each document is chunked into ~40 pieces, embedded with
+[Voyage AI](https://www.voyageai.com/), and every question is answered by embedding the question,
+finding the 5 most similar chunks via cosine similarity, and generating an answer from only those
+chunks — never the full library. Every test case is now graded twice: did retrieval find the right
+document, and was the final answer correct?
 
 ## The documents
 
 SBCs are a standardized, federally mandated format (every US health plan has to produce one), so
-these are easy to source publicly and easy to verify facts against.
+these are easy to source publicly and easy to verify facts against. This version uses 6, covering 4
+different plan types from 6 different real employers:
 
 - **Plan A** — the official CMS reference example SBC (a PPO family plan), used industry-wide to
   illustrate the standard SBC template. Public domain, from cms.gov.
 - **Plan B** — Auburn University's actual 2025 HDHP plan document (administered by Blue Cross Blue
-  Shield of Alabama), posted publicly on Auburn's HR site for employees and prospective employees.
+  Shield of Alabama), posted publicly on Auburn's HR site.
+- **Plan C** — the State of Illinois's HMO option for state employees (administered by Aetna),
+  published by the state's Central Management Services agency.
+- **Plan D** — Northwestern University's PPO plan (administered by UnitedHealthcare), posted publicly
+  on the university's HR site.
+- **Plan E** — Cochise County, Arizona's EPO plan for county employees (Cochise Combined Trust,
+  administered on the BlueCross BlueShield of Arizona network), published on the county's public site.
+- **Plan F** — CalPERS's Access+ HMO (Blue Shield of California), the HMO option offered to California
+  state and public agency employees.
 
-I picked two genuinely different plan types (PPO vs. HDHP) on purpose, not two similar ones. They
-disagree on real things — Plan A requires a specialist referral and Plan B doesn't, Plan A covers
-mental health outpatient care and Plan B doesn't, Plan A covers skilled nursing and children's glasses
-and Plan B doesn't — so a model that's actually reading the documents (rather than pattern-matching on
-"health insurance generally covers X") has to get those distinctions right.
+Deliberately picking 4 plan types (PPO x2, HDHP, HMO x2, EPO) instead of near-duplicates means a model
+that's pattern-matching on "health insurance generally covers X" will get tripped up — referral
+requirements, out-of-network coverage, and drug tiers all vary meaningfully across these 6.
+
+## How the RAG pipeline works
+
+1. **Chunking** (`scripts/chunk-docs.js`) — each `plan-*.md` file is split into small, independently
+   retrievable pieces: one chunk per "Important Questions" bullet, one per line in the "Common Medical
+   Events" cost table, one per excluded/other-covered-services list, and one per coverage example.
+   ~40-44 chunks per document, ~260 total across all 6.
+2. **Embedding** (`scripts/build-index.js`) — every chunk gets embedded with Voyage AI's
+   `voyage-3-lite` model and written to `docs/embedding-index.json`, along with its source document and
+   section. This is a build step, run locally, not something that happens per-request.
+3. **Retrieval** (`scripts/retrieval.js`) — at query time, the question gets embedded the same way, and
+   the 5 chunks with the highest cosine similarity to the question are retrieved. No vector database —
+   at ~260 chunks, a linear scan over an array of float arrays is well under a millisecond, so a real
+   vector DB (Pinecone, Vectorize, etc.) would be solving a problem this corpus doesn't have yet.
+4. **Generation** — the prompt gets built from only the retrieved chunks (`scripts/promptfoo-prompt.js`
+   for the eval; the same logic is duplicated in the Cloudflare Worker for the live demo, since Workers
+   can't `require()` a file from this repo), and the model answers strictly from what it was given.
 
 ## What's in this repo
 
-- **`plan-a.md`** / **`plan-b.md`** — the two source documents, condensed to their factual content
-  (deductibles, copays, coinsurance, exclusions, coverage examples), with links to the originals.
-- **`tests.csv`** — 65 questions with answers I verified directly against the source PDFs: the original
-  50 (20 about Plan A only, 20 about Plan B only, 10 that require comparing the two, e.g. "which plan
-  requires a referral to see a specialist?"), plus 15 new adversarial/hallucination-check questions
-  (5 asking about facts genuinely absent from both documents, 5 that plant one plan's specific detail
-  into a question about the other plan, 2 asking about invented plan names that don't exist, 2 wrapped
-  in an irrelevant narrative red herring, and 1 that's genuinely ambiguous rather than answerable either
-  way).
-- **`prompt.txt`** — both documents pasted in as context, followed by one question, with instructions
-  to answer in a short first line (a dollar amount, percentage, Yes/No, or plan name) plus a one-sentence
-  citation.
-- **`promptfooconfig.yaml`** — wires it together and grades each response by checking whether the
-  model's first line contains the expected fact from the answer key.
+- **`plan-a.md`** through **`plan-f.md`** — the six source documents, condensed to their factual
+  content (deductibles, copays, coinsurance, exclusions, coverage examples), with links to the
+  originals.
+- **`scripts/chunk-docs.js`** — splits a condensed plan doc into retrievable chunks.
+- **`scripts/build-index.js`** — chunks all 6 documents and embeds every chunk with Voyage AI, writing
+  `docs/embedding-index.json`. Run this whenever a plan doc changes.
+- **`scripts/retrieval.js`** — shared cosine-similarity search logic (embed a query, return the top-K
+  matching chunks). Used by the eval; mirrored in the Cloudflare Worker for the live demo.
+- **`scripts/promptfoo-prompt.js`** — promptfoo's custom prompt function. This is what actually runs
+  retrieval for each test case and builds the final prompt from the retrieved chunks.
+- **`scripts/assert-retrieval.js`** / **`scripts/retrieval-cache.js`** — the retrieval-quality grading
+  assertion, and the side-channel it uses to see which chunks got retrieved for each test case (see the
+  comments in both files for why this needs a small workaround).
+- **`tests.csv`** — 88 questions with answers I verified directly against the source documents: 60
+  per-plan questions (10 per plan), 14 cross-plan comparisons, and 14 adversarial/hallucination-check
+  questions (genuinely absent facts, invented plan names, detail-borrowing between plans, irrelevant
+  narrative red herrings, and genuine ambiguity). Each row also has an `expected_source` column naming
+  which plan document the correct answer actually lives in, used for retrieval-quality grading.
+- **`promptfooconfig.yaml`** — wires the prompt function and test cases together, and grades each
+  response twice: `answer_correct` (does the first line contain the expected fact?) and
+  `retrieval_correct` (did retrieval pull back a chunk from the right document?).
 
 ## Try it yourself
 
-The [live dashboard](https://benefits.stephpawlowski.com) has a "Try it with your own document"
-panel: paste in any plan document text and ask it a question, and it calls `claude-sonnet-5` for a
-real answer. That call goes through a small Cloudflare Worker I wrote that holds the Anthropic API
-key server-side, so it's never exposed in the browser, and rate-limits requests per visitor. It's a
-real live model call, not a canned response.
+The [live dashboard](https://benefits.stephpawlowski.com) has an "Ask the benefits library" panel: ask
+any question about any of the 6 plans, and it runs the real pipeline live — your question gets embedded,
+compared against the same ~260-chunk index used by the eval, and the retrieved chunks are shown
+alongside the answer so you can see exactly what the model was (and wasn't) given. That call goes
+through a small Cloudflare Worker I wrote that holds both the Anthropic and Voyage API keys
+server-side, so neither is ever exposed in the browser, and rate-limits requests per visitor. It's a
+real live pipeline, not a canned response.
 
 ## Setup
 
@@ -73,7 +104,25 @@ Set your Anthropic API key (get one at https://console.anthropic.com/):
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
+Set a Voyage AI key too (get a free one at https://dash.voyageai.com/ — this eval's retrieval step
+needs it both to build the index and to embed each question at eval time):
+
+```bash
+export VOYAGE_API_KEY="pa-..."
+```
+
 To test a different model, edit the `providers:` list in `promptfooconfig.yaml`.
+
+## Building the embedding index
+
+Before running the eval, build the retrieval index (this embeds all ~260 chunks — it costs a fraction
+of a cent on Voyage's free tier and takes under a minute):
+
+```bash
+npm run build-index
+```
+
+This writes `docs/embedding-index.json`. Re-run it any time a `plan-*.md` file changes.
 
 ## Running the eval
 
@@ -81,8 +130,10 @@ To test a different model, edit the `providers:` list in `promptfooconfig.yaml`.
 npm run eval
 ```
 
-Runs all 65 questions and prints a pass/fail summary with accuracy. To also save the full results to a
-file (needed if you want to build something like a results dashboard from it):
+Runs all 88 questions and prints a pass/fail summary with accuracy. Each test case is graded on two
+separate metrics — `answer_correct` and `retrieval_correct` — so the summary table shows both. To also
+save the full results to a file (needed if you want to build something like a results dashboard from
+it):
 
 ```bash
 npm run eval -- -o results.json
@@ -96,78 +147,44 @@ npm run view
 
 ## Findings
 
-**Model tested:** `claude-sonnet-5`. This is the v2 run: all 65 questions, including the 15 new
-adversarial/hallucination-check cases.
-
-**63 out of 65 correct (96.9%)** — 13 of the 15 new adversarial cases passed outright, and neither of
-the two misses is a real factual error or a hallucination. No sign of the model blending facts between
-the two documents; every cross-plan comparison question (the ones designed to catch that specific
-failure mode) was answered correctly, and the model correctly said "Not stated in the document" on the
-genuinely-absent-fact questions rather than guessing.
-
-### Miss #1: Q50 is a grading-script bug, not a model error
-
-Question 50 asked: *"Which plan type is Plan A, and which plan type is Plan B?"* Expected answer:
-`"Plan A is PPO, Plan B is HDHP"`. The model actually answered:
-
-> Plan A — PPO; Plan B — HDHP
->
-> Plan A's header states "Plan Type: PPO," while Plan B's header states "Plan Type: HDHP."
-
-That's the right fact, just phrased with a dash instead of the word "is." My grading script does a
-normalized substring match, and `"plan a — ppo; plan b — hdhp"` doesn't contain the literal phrase
-`"plan a is ppo, plan b is hdhp"`, so it's marked as a fail even though the model was right. Same issue
-I flagged in the v1 run, just with a slightly different dash/punctuation choice this time — automated
-substring grading holds up fine for single-fact answers (dollar amounts, percentages, Yes/No) but
-breaks down on any question whose correct answer can be phrased more than one way.
-
-### Miss #2: Q59 is a test-design limitation, not a hallucination
-
-Question 59 asks whether Alabama law affects Plan A's out-of-network coinsurance rate — a detail
-borrowed from Plan B's document (which does have an Alabama-specific carve-out) and applied to a
-question about Plan A (which doesn't have one). Expected answer: `"Not stated in the document"`. The
-model answered:
-
-> No
->
-> Plan A's Summary of Benefits and Coverage does not mention any Alabama-specific provision affecting
-> its out-of-network coinsurance rate.
-
-The model got the substance exactly right: it correctly noticed the detail doesn't apply to Plan A and
-didn't invent one. But my answer key expected the literal phrase "Not stated in the document," which is
-a stricter standard than the question's own yes/no framing actually calls for — a question asked as
-"does X affect Y?" can be answered "No" by a careful model instead of a "not stated" hedge, and both are
-defensible. This is a limitation of how I wrote this particular adversarial question, distinct from the
-genuinely open-ended absent-fact questions in the set (like "what is the premium?") where "not stated"
-really is the only sensible answer.
-
-### What this suggests about using an LLM for benefits Q&A in production
-
-With correctly designed grading, this model effectively got all 65 facts right across two real,
-meaningfully different plan documents, including every question built to catch fact-blending,
-invented-plan hallucinations, or getting distracted by an irrelevant narrative detail. That's a strong
-result for a grounded-document Q&A use case. Both "misses" here are about my own eval design (a rigid
-answer-key phrasing, and a question framed more narrowly than my answer key assumed) rather than the
-model getting anything factually wrong — which is itself the more important lesson for anyone building
-this kind of check: always spot-read the failures before trusting the accuracy percentage, because
-sometimes the harness is what's wrong.
+Results pending — this v3 (RAG) question set hasn't been run against a live model yet. Once it has,
+this section will cover both accuracy numbers (retrieval and answer) and, if there's a gap between
+them, what that gap says about where the pipeline actually breaks: bad retrieval (the right chunk never
+got pulled back) versus bad generation (the model had the right chunk and still answered wrong). That
+distinction is the whole point of grading these separately instead of just checking whether the final
+answer matched.
 
 ## Project structure
 
 ```
 benefits-qa-eval/
-├── plan-a.md               # Source document 1 (CMS official PPO sample SBC)
-├── plan-b.md               # Source document 2 (Auburn University HDHP SBC)
-├── tests.csv                # 65 questions + answer key (id, question, expected, source)
-├── prompt.txt                # Prompt template: both documents + one question
-├── promptfooconfig.yaml       # promptfoo config wiring prompt + tests + grading
+├── plan-a.md                    # Source doc 1 (CMS official PPO sample SBC)
+├── plan-b.md                    # Source doc 2 (Auburn University HDHP SBC)
+├── plan-c.md                    # Source doc 3 (Illinois State Employees HMO SBC)
+├── plan-d.md                    # Source doc 4 (Northwestern University PPO SBC)
+├── plan-e.md                    # Source doc 5 (Cochise Combined Trust EPO SBC)
+├── plan-f.md                    # Source doc 6 (CalPERS Access+ HMO SBC)
+├── tests.csv                    # 88 questions + answer key (id, question, expected, source, expected_source)
+├── prompt.txt                   # No longer used — see scripts/promptfoo-prompt.js
+├── promptfooconfig.yaml         # promptfoo config: prompt fn + tests + dual grading
+├── scripts/
+│   ├── chunk-docs.js            # Splits a plan doc into retrievable chunks
+│   ├── build-index.js           # Chunks + embeds all 6 docs -> docs/embedding-index.json
+│   ├── retrieval.js             # Embed a query, cosine-similarity search, top-K
+│   ├── promptfoo-prompt.js      # Custom prompt function: retrieval + prompt building
+│   ├── assert-retrieval.js      # Retrieval-quality grading assertion
+│   └── retrieval-cache.js       # Side channel between the prompt fn and the assertion
+├── docs/
+│   ├── embedding-index.json     # Generated by build-index.js — the ~260-chunk vector index
+│   └── index.html               # The dashboard: results table + live RAG demo
 ├── package.json
 └── README.md
 ```
 
 ## Why this project
 
-Second rep in a small LLM-evaluation portfolio, this time on a retrieval/grounding task instead of a
-policy-classification task: does the model stick to what's actually in the source document, and can it
-keep two similar-but-different documents straight instead of blending them. It also turned up a lesson
-the first project didn't: that eval grading logic needs its own scrutiny, not just the model's answers.
+Second rep in a small LLM-evaluation portfolio, and the one where I moved from "give the model
+everything and see if it stays grounded" to an actual RAG pipeline: chunking, embedding, retrieval, and
+generation as separate, separately-measurable steps. Grading retrieval and generation independently is
+the part I think matters most — an eval that only checks the final answer can't tell you whether a miss
+came from bad retrieval or bad reasoning, and those need completely different fixes.
