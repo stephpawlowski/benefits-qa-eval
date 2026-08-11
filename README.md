@@ -147,12 +147,34 @@ npm run view
 
 ## Findings
 
-Results pending — this v3 (RAG) question set hasn't been run against a live model yet. Once it has,
-this section will cover both accuracy numbers (retrieval and answer) and, if there's a gap between
-them, what that gap says about where the pipeline actually breaks: bad retrieval (the right chunk never
-got pulled back) versus bad generation (the model had the right chunk and still answered wrong). That
-distinction is the whole point of grading these separately instead of just checking whether the final
-answer matched.
+Run against `claude-sonnet-5` on the full 88-question set: **85.2% answer accuracy (75/88)** and
+**90.9% retrieval accuracy (80/88)**. (The automated grader actually scored 76/88 — one case, #44, is a
+false positive where the model correctly said "Not stated in the document" to a yes/no question and the
+substring grader matched because the word "not" contains "no." The dashboard shows the raw grader output
+per question and flags this explicitly; the number above is manually corrected for it.)
+
+**The headline result: zero hallucinations.** Every one of the 14 failures was the model declining to
+answer ("Not stated in the document") rather than confidently stating something wrong. It never invented
+a dollar figure, never guessed at a coverage rule, and never attributed one plan's fact to another. Given
+that this was a real risk this eval was specifically built to catch — the test set includes 8 questions
+about facts that plausibly sound like they belong to a plan but don't (asking about Plan C's premium,
+inventing a "Plan G," borrowing a detail from the wrong plan's document) — the model got all 8 right,
+correctly refusing every one.
+
+**Where it actually broke down: retrieval, not reasoning — except for one clear exception.** Of the 14
+misses, 8 trace to retrieval never surfacing the needed chunk in the top 5 (out of ~260 candidates, ranked
+purely by embedding similarity). For most of those, the model did the right thing with bad information:
+it said so, rather than guessing. The other 6 are the more interesting case — retrieval found the right
+document, but the model still answered "Not stated" or got the comparison wrong anyway. All 6 of those are
+**cross-plan comparison questions**: "Between Plan A and Plan D, which has the lower deductible?" style
+questions, where the top-5 window has to hold chunks from *two* different plans simultaneously instead of
+one. Retrieval nailed this 100% of the time (10/10) — both plans' relevant chunks made it into context —
+but the model's final answer was only right 60% of the time (6/10). That's a real generation-side gap, not
+a retrieval-side one: the model sometimes had both numbers in front of it and still said "not stated" or
+compared the wrong figures. By contrast, single-plan questions scored 87% correct and adversarial
+questions scored 100%. Splitting retrieval and answer grading is exactly what surfaces this — a single
+pass/fail metric would have just called all 6 of these "wrong" without showing that the pipeline actually
+did its job of finding the right sources.
 
 ## Project structure
 
