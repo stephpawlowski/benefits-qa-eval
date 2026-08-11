@@ -1,66 +1,89 @@
-id,question,expected,source
-1,"For Plan A (the PPO plan), what is the individual deductible?",$500,"Plan A: overall deductible $500/individual"
-2,"What is the family deductible for Plan A?","$1,000","Plan A: overall deductible $1,000/family"
-3,"Under Plan A, are preventive care and primary care services covered before you meet your deductible?",Yes,"Plan A: Yes, preventive and primary care covered before deductible"
-4,"What is the specific deductible for prescription drug coverage under Plan A?",$300,"Plan A: $300 for prescription drug coverage"
-5,"What is the specific deductible for occupational therapy services under Plan A?",$300,"Plan A: $300 for occupational therapy services"
-6,"What is the in-network individual out-of-pocket limit under Plan A?","$2,500","Plan A: network providers $2,500 individual"
-7,"What is the out-of-network family out-of-pocket limit under Plan A?","$8,000","Plan A: out-of-network $8,000 family"
-8,"Does Plan A require a referral to see a specialist?",Yes,"Plan A: Yes, referral required before seeing a specialist"
-9,"What is the network copay for a primary care visit to treat an injury or illness under Plan A?",$35,"Plan A: $35 copay/office visit"
-10,"What is the network copay for a specialist visit under Plan A?",$50,"Plan A: $50 copay/visit"
-11,"Under Plan A, is preauthorization required for a specialist visit?",Yes,"Plan A: preauthorization is required for specialist visit"
-12,"What is the network cost for preventive care/screening/immunization under Plan A?",No charge,"Plan A: No charge (network)"
-13,"What is the network copay for a diagnostic test (x-ray, blood work) under Plan A?",$10,"Plan A: $10 copay/test"
-14,"What is the network copay for imaging (CT/PET scans, MRIs) under Plan A?",$50,"Plan A: $50 copay/test"
-15,"What is the network copay for generic (Tier 1) drugs under Plan A?",$10,"Plan A: $10 copay/prescription"
-16,"What is the network coinsurance for specialty (Tier 4) drugs under Plan A?",50%,"Plan A: 50% coinsurance (network) for Tier 4 specialty drugs"
-17,"How many rehabilitation services visits per year are covered under Plan A?",60,"Plan A: limit 60 visits/year"
-18,"Does Plan A cover routine eye care for adults?",No,"Plan A: Routine eye care (Adult) is an excluded service"
-19,"In the Peg is Having a Baby coverage example under Plan A, how much would Peg pay in total?","$2,560","Plan A: The total Peg would pay is $2,560"
-20,"In the Managing Joe's Type 2 Diabetes coverage example under Plan A, what is the total example cost of care before Joe's share is applied?","$5,600","Plan A: Total Example Cost $5,600"
-21,"For Plan B (the Auburn University HDHP), what is the in-network self-only deductible?","$2,500","Plan B: $2,500/self-only in-network"
-22,"What is the in-network family deductible for Plan B?","$5,000","Plan B: $5,000/family in-network"
-23,"What is the out-of-network self-only deductible for Plan B?","$5,000","Plan B: $5,000/self-only out-of-network"
-24,"Does Plan B have separate deductibles for specific services like prescription drugs?",No,"Plan B: No, you don't have to meet a deductible for specific services"
-25,"What is the in-network out-of-pocket limit for family coverage under Plan B?","$10,000","Plan B: in-network $10,000 family"
-26,"Does Plan B require a referral to see a specialist?",No,"Plan B: No, you can see the specialist you choose without a referral"
-27,"What is the network coinsurance for a primary care visit under Plan B?",20%,"Plan B: 20% coinsurance"
-28,"What is the network coinsurance for a specialist visit under Plan B?",20%,"Plan B: 20% coinsurance"
-29,"What is the network copay for Tier 1 prescription drugs at retail under Plan B?",$15,"Plan B: Tier 1 drugs $15 copay (retail)"
-30,"What is the network cost for Tier 5 preferred specialty drugs at retail under Plan B?",25% coinsurance,"Plan B: Tier 5 drugs 25% coinsurance (retail)"
-31,"Under Plan B's TigerMeds program, what copay does Auburn University waive for Tier 1 medications filled at the Auburn University Pharmaceutical Care Center?",$15,"Plan B: Auburn waives the $15 copay for Tier 1 medications at AUPCC"
-32,"Are outpatient mental health or behavioral health services covered under Plan B?",Not Covered,"Plan B: Outpatient services Not Covered"
-33,"Is skilled nursing care covered under Plan B?",Not Covered,"Plan B: Skilled nursing care Not Covered, member pays 100%"
-34,"Are children's glasses covered under Plan B?",Not Covered,"Plan B: Children's glasses Not Covered, member pays 100%"
-35,"What is the maximum combined annual visit limit for occupational, physical, and speech therapy under Plan B's rehabilitation services?",30,"Plan B: combined maximum of 30 visits/year"
-36,"In Alabama, what is the out-of-network coinsurance rate for a primary care visit under Plan B, instead of the standard 40%?",50%,"Plan B: in Alabama, out-of-network coinsurance is 50%"
-37,"Does Plan B cover chiropractic care?",Yes,"Plan B: Chiropractic care listed under Other Covered Services"
-38,"In the Peg is Having a Baby coverage example under Plan B, how much would Peg pay in total?","$4,570","Plan B: The total Peg would pay is $4,570"
-39,"In the Mia's Simple Fracture coverage example under Plan B, what coinsurance amount did Mia pay?",$70,"Plan B: Mia's coinsurance $70"
-40,"Under Plan B, is Assisted Reproductive Technology covered as part of infertility treatment?",No,"Plan B: Infertility treatment covered but Assisted Reproductive Technology is NOT covered"
-41,"Which plan has the lower individual/self-only deductible, Plan A or Plan B?",Plan A,"Plan A $500 vs Plan B $2,500 self-only deductible"
-42,"Which plan requires a referral to see a specialist, Plan A or Plan B?",Plan A,"Plan A requires referral; Plan B does not"
-43,"Which plan covers mental health and substance abuse outpatient services, Plan A or Plan B?",Plan A,"Plan A covers it ($35 copay+20%); Plan B does not cover it"
-44,"Which plan covers skilled nursing care, Plan A or Plan B?",Plan A,"Plan A covers 60 visits/year; Plan B does not cover it"
-45,"Which plan covers children's glasses, Plan A or Plan B?",Plan A,"Plan A covers one pair/year (20% coinsurance); Plan B does not cover it"
-46,"Does Plan A or Plan B have more prescription drug pricing tiers?",Plan B,"Plan A has 4 drug tiers; Plan B has 5 drug tiers"
-47,"Which plan explicitly lists acupuncture as an excluded service rather than an other covered service, Plan A or Plan B?",Plan B,"Plan A lists acupuncture under Other Covered Services; Plan B lists it under Excluded Services"
-48,"Between the two plans, which has the higher in-network family out-of-pocket limit, Plan A or Plan B?",Plan B,"Plan A network family OOP $5,000; Plan B network family OOP $10,000"
-49,"For the Managing Joe's Type 2 Diabetes coverage example, which plan resulted in a lower total out-of-pocket cost for Joe, Plan A or Plan B?",Plan A,"Plan A: Joe pays $1,820; Plan B: Joe pays $2,910"
-50,"Which plan type is Plan A, and which plan type is Plan B?","Plan A is PPO, Plan B is HDHP","Plan A Plan Type: PPO; Plan B Plan Type: HDHP"
-51,What is the monthly premium a member pays for Plan A?,Not stated in the document,Absent from both documents: SBCs in this format don't include premium amounts
-52,Does Plan A's SBC mention coverage for telehealth or virtual doctor visits?,Not stated in the document,Absent from Plan A: telehealth/virtual visits are never mentioned in the document
-53,"Does Plan B include a Health Savings Account (HSA) as part of its benefits, based on this document?",Not stated in the document,Absent from Plan B: no HSA is mentioned anywhere in the document
-54,What phone number should a Plan A member call for customer service questions?,Not stated in the document,Absent from Plan A: no phone number or contact information appears in the document
-55,What is the specific copay or coinsurance dollar amount for chiropractic care under Plan B?,Not stated in the document,Plan B lists chiropractic care under 'Other covered services (limitations may apply)' with no dollar figure given
-56,"Does Plan B have a separate deductible specifically for occupational therapy services, the way Plan A does?",No,"Cross-plan trap: Plan A has a $300 OT deductible, but Plan B states 'Other deductibles for specific services: No'"
-57,"Does Plan B have a separate deductible specifically for prescription drug coverage, the way Plan A does?",No,"Cross-plan trap: Plan A has a $300 Rx deductible, but Plan B states 'Other deductibles for specific services: No'"
-58,"According to Plan B's SBC, is preauthorization required before seeing a specialist?",Not stated in the document,"Cross-plan trap: Plan A requires specialist preauthorization, but Plan B's specialist visit line includes no such requirement"
-59,"Under Plan A, does the state of Alabama affect the out-of-network coinsurance rate for a primary care visit?",Not stated in the document,"Cross-plan trap: the Alabama-specific coinsurance carve-out appears only in Plan B's document, never in Plan A's"
-60,"Under Plan A, is bariatric surgery covered only for morbid obesity in limited circumstances?",Not stated in the document,Cross-plan trap: that specific limiting language appears only in Plan B's document; Plan A just lists 'Bariatric surgery' with no qualifier
-61,"What is the individual deductible under Plan C, the HMO option described alongside these two plans?",Not stated in the document,"Invented plan: no 'Plan C' or HMO option exists in either document, only Plan A (PPO) and Plan B (HDHP)"
-62,Does the 'Gold Choice PPO' plan referenced in these materials cover routine eye exams for adults?,Not stated in the document,Invented plan name: no plan called 'Gold Choice PPO' appears anywhere in either document
-63,"My coworker just switched from Plan A to Plan B after her company changed insurance carriers this year. Under her old Plan A, what was the out-of-network individual out-of-pocket limit?","$4,000","Narrative red herring: the job-switch story is irrelevant; the fact is Plan A's out-of-network individual out-of-pocket limit of $4,000"
-64,"I read that HDHPs generally use coinsurance instead of flat copays. Given that, what is the copay dollar amount for a primary care visit under Plan B?",Not stated in the document,"Narrative red herring: Plan B's primary care visit is 20% coinsurance with no copay amount given at all, unlike Plan A which does have a copay"
-65,Does Plan A cover acupuncture when it is used for pain management unrelated to rehabilitation?,Not stated in the document,Genuine ambiguity: Plan A's document only addresses acupuncture 'if prescribed for rehabilitation purposes' and is silent on any other use
+id,question,expected,source,expected_source
+1,"For Plan A (the PPO plan), what is the individual deductible?",$500,Plan A: overall deductible $500/individual,plan-a
+2,What is the family deductible for Plan A?,"$1,000","Plan A: overall deductible $1,000/family",plan-a
+3,"Under Plan A, are preventive care and primary care services covered before you meet your deductible?",Yes,"Plan A: Yes, preventive and primary care covered before deductible",plan-a
+4,What is the specific deductible for prescription drug coverage under Plan A?,$300,Plan A: $300 for prescription drug coverage,plan-a
+5,What is Plan A's in-network out-of-pocket limit for a family?,"$5,000","Plan A: out-of-pocket limit network $5,000 family",plan-a
+6,Does Plan A require a referral to see a specialist?,Yes,Plan A: referral required to see a specialist,plan-a
+7,What is the in-network copay for a specialist visit under Plan A?,$50,Plan A: specialist visit $50 copay,plan-a
+8,What is the in-network copay for urgent care under Plan A?,$30,Plan A: urgent care $30 copay,plan-a
+9,"Under Plan A, what is the in-network cost sharing for emergency room care?",20%,Plan A: emergency room care 20% coinsurance,plan-a
+10,"In Plan A's coverage example for Peg having a baby, what is the total Peg would pay?","$2,560","Plan A: Peg coverage example total $2,560",plan-a
+11,What is Plan B's in-network individual (self-only) deductible?,"$2,500","Plan B: overall deductible $2,500 self-only in-network",plan-b
+12,What is Plan B's in-network family deductible?,"$5,000","Plan B: overall deductible $5,000 family in-network",plan-b
+13,Does Plan B require a referral to see a specialist?,No,Plan B: no referral required,plan-b
+14,"Under Plan B, are mental health outpatient services covered?",Not Covered,Plan B: mental health outpatient services Not Covered,plan-b
+15,What is Plan B's Tier 1 drug copay at a retail pharmacy?,$15,Plan B: Tier 1 drugs $15 copay retail,plan-b
+16,What is Plan B's in-network out-of-pocket limit for a family?,"$10,000","Plan B: out-of-pocket limit in-network $10,000 family",plan-b
+17,"Under Plan B, are children's glasses covered?",Not Covered,"Plan B: children's glasses Not Covered, member pays 100%",plan-b
+18,"Under Plan B, is skilled nursing care covered?",Not Covered,"Plan B: skilled nursing care Not Covered, member pays 100%",plan-b
+19,"Under Plan B, what is the combined yearly visit maximum for occupational, physical, and speech therapy?",30,Plan B: combined maximum of 30 visits/year,plan-b
+20,"Under Plan B, if a provider is located in Alabama, what is the out-of-network coinsurance for a primary care visit?",50%,"Plan B: in Alabama, out-of-network primary care is 50%",plan-b
+21,What is Plan C's overall deductible?,$0,Plan C: overall deductible $0,plan-c
+22,What is the specific deductible for prescription drugs under Plan C?,$150,Plan C: $150 for prescription drugs,plan-c
+23,What is Plan C's in-network out-of-pocket limit for a family?,"$6,000","Plan C: out-of-pocket limit in-network $6,000 family",plan-c
+24,Does Plan C require a referral to see a specialist?,No,Plan C: no referral required,plan-c
+25,What is the copay for a specialist visit under Plan C?,$35,Plan C: specialist visit $35 copay,plan-c
+26,What is the copay for an emergency room visit under Plan C?,$275,Plan C: emergency room care $275 copay,plan-c
+27,"Under Plan C, is out-of-network care covered for non-emergency situations?",No,"Plan C: Health Network Only, out-of-network not covered except emergency",plan-c
+28,What is the copay for urgent care under Plan C?,$35,Plan C: urgent care $35 copay,plan-c
+29,"Under Plan C, how many visits per plan year are allowed for combined physical, occupational, and speech therapy?",60,Plan C: rehabilitation services limit 60 visits/plan year,plan-c
+30,"In Plan C's coverage example for Peg having a baby, what is the total Peg would pay?",$470,Plan C: Peg coverage example total $470,plan-c
+31,What is Plan D's network individual deductible?,$750,Plan D: network deductible $750 individual,plan-d
+32,What is Plan D's network family deductible?,"$1,500","Plan D: network deductible $1,500 family",plan-d
+33,What is Plan D's network out-of-pocket limit for an individual?,"$3,000","Plan D: network out-of-pocket limit $3,000 individual",plan-d
+34,Does Plan D require a referral to see a specialist?,No,Plan D: no referral required,plan-d
+35,What is the network copay for a primary care visit under Plan D?,$40,Plan D: primary care visit $40 copay network,plan-d
+36,What is the network copay for a specialist visit under Plan D?,$55,Plan D: specialist visit $55 copay network,plan-d
+37,"What is the copay for an emergency room visit under Plan D, before coinsurance applies?",$150,Plan D: emergency room $150 copay then 20% coinsurance,plan-d
+38,"Under Plan D, are children's eye exams covered?",Not covered,Plan D: children's eye exam Not covered,plan-d
+39,"Under Plan D, how many outpatient rehabilitation visits per calendar year are allowed?",Unlimited,Plan D: outpatient rehabilitation services unlimited per calendar year,plan-d
+40,What is Plan D's separate prescription drug out-of-pocket maximum for an individual?,"$1,500","Plan D: Rx out-of-pocket maximum $1,500 individual",plan-d
+41,What is Plan E's per-participant deductible?,$600,Plan E: deductible $600 per participant,plan-e
+42,What is Plan E's per-family deductible?,"$1,800","Plan E: deductible $1,800 per family",plan-e
+43,What is Plan E's out-of-pocket limit per participant?,"$9,100","Plan E: out-of-pocket limit $9,100 per participant",plan-e
+44,Does Plan E require a referral to see a specialist?,No,Plan E: no referral required,plan-e
+45,What is the copay for a specialist visit under Plan E?,$45,Plan E: specialist visit $45 copay,plan-e
+46,"Under Plan E, is out-of-network care covered outside of a medical emergency?",No,Plan E: only in-network care covered except medical emergency,plan-e
+47,"What is the copay for an emergency room visit under Plan E, before coinsurance applies?",$250,Plan E: emergency room $250 copay plus 20% coinsurance,plan-e
+48,"Under Plan E, how many chiropractic visits per plan year are covered?",20,Plan E: chiropractic care limited to 20 visits/plan year,plan-e
+49,What is the in-network copay for a 30-day supply of generic drugs under Plan E?,$10,Plan E: generic drugs $10 copay 30-day supply,plan-e
+50,"In Plan E's coverage example for Mia's simple fracture, what is the total Mia would pay?","$1,350","Plan E: Mia coverage example total $1,350",plan-e
+51,What is Plan F's overall deductible?,$0,Plan F: overall deductible $0,plan-f
+52,What is Plan F's medical out-of-pocket limit for a family?,"$3,000","Plan F: medical out-of-pocket limit $3,000 family",plan-f
+53,Does Plan F require a referral to see a specialist?,Yes,Plan F: referral required to see a specialist,plan-f
+54,What is the copay for an Access+ Specialist visit under Plan F?,$30,Plan F: Access+ Specialist visit $30 copay,plan-f
+55,What is the copay for a primary care visit under Plan F?,$15,Plan F: primary care visit $15 copay,plan-f
+56,What is the emergency room facility fee copay under Plan F?,$50,Plan F: emergency room facility fee $50,plan-f
+57,"Under Plan F, is home health care covered?",Yes,Plan F: home health care No charge (covered),plan-f
+58,"Under Plan F, how many days of skilled nursing care are covered per benefit period?",100,Plan F: skilled nursing care limited to 100 days per benefit period,plan-f
+59,What is Plan F's pharmacy out-of-pocket limit for an individual?,"$7,700","Plan F: pharmacy out-of-pocket limit $7,700 individual",plan-f
+60,"In Plan F's coverage example for managing Joe's type 2 diabetes, what is the total Joe would pay?",$610,Plan F: Joe coverage example total $610,plan-f
+61,Which plan type is Plan E?,EPO,Plan E: Plan Type EPO,plan-e
+62,Which plan type is Plan C?,HMO,Plan C: Plan Type HMO,plan-c
+63,Which plan type is Plan F?,HMO,Plan F: Plan Type HMO,plan-f
+64,Which plan type is Plan D?,PPO,Plan D: Plan Type PPO,plan-d
+65,"Between Plan A and Plan D, which one has the lower network individual deductible?",Plan A,Plan A $500 vs Plan D $750 individual deductible,"plan-a,plan-d"
+66,"Between Plan B and Plan E, which one has the higher family deductible?",Plan B,"Plan B $5,000 vs Plan E $1,800 family deductible","plan-b,plan-e"
+67,"Between Plan C and Plan F, which one has the higher family out-of-pocket limit?",Plan C,"Plan C $6,000 vs Plan F $3,000 family out-of-pocket limit","plan-c,plan-f"
+68,"Between Plan A and Plan D, which one covers children's eye exams?",Plan A,Plan A covers ($35 copay) vs Plan D Not covered,"plan-a,plan-d"
+69,"Between Plan D and Plan A, which one has unlimited outpatient rehabilitation visits per year?",Plan D,Plan D unlimited vs Plan A limited to 60 visits/year,"plan-a,plan-d"
+70,"Between Plan C and Plan F, which one requires a referral to see a specialist?",Plan F,Plan C no referral vs Plan F referral required,"plan-c,plan-f"
+71,"Between Plan B and Plan E, which one covers mental health outpatient services?",Plan E,Plan B Not Covered vs Plan E covered,"plan-b,plan-e"
+72,"Between Plan A and Plan C, which one has a higher specialist visit copay?",Plan A,Plan A $50 vs Plan C $35 specialist copay,"plan-a,plan-c"
+73,"Between Plan D and Plan F, which one has a lower out-of-pocket limit for an individual?",Plan F,"Plan F $1,500 medical vs Plan D $3,000 network individual out-of-pocket limit","plan-d,plan-f"
+74,"Between Plan C and Plan E, which one has a $0 overall deductible?",Plan C,Plan C $0 vs Plan E $600 deductible,"plan-c,plan-e"
+75,What is the monthly premium for Plan C?,Not stated in the document,"Premiums are provided separately, not stated in any SBC",
+76,What is the average hold time when calling Plan E's customer service line?,Not stated in the document,Not covered by any SBC document,
+77,What is the annual premium increase percentage for Plan F compared to last year?,Not stated in the document,Not covered by any SBC document,
+78,How many in-network primary care physicians are available within 10 miles of a typical member's home under Plan D?,Not stated in the document,Not covered by any SBC document,
+79,What is the individual deductible for Plan G?,Not stated in the document,Plan G does not exist in this document library,
+80,"Does Plan H, the university's dental-only plan, require a referral to see a specialist?",Not stated in the document,Plan H does not exist in this document library,
+81,"Under Plan C, does Auburn University's TigerMeds program waive the Tier 1 drug copay?",Not stated in the document,"TigerMeds/AUPCC is a Plan B (Auburn) detail, not mentioned for Plan C",plan-c
+82,Does Plan F's out-of-network coinsurance change specifically because a provider is located in Alabama?,Not stated in the document,"The Alabama carve-out is a Plan B detail, not mentioned for Plan F",plan-f
+83,"Under Plan E, is coverage limited to CalPERS Access+ specialist self-referrals?",Not stated in the document,"Access+ self-referral is a Plan F (CalPERS) detail, not mentioned for Plan E",plan-e
+84,Does Plan A cap wellness care spending at $750 per plan participant for services not covered by healthcare reform?,Not stated in the document,"The $750 wellness cap is a Plan E (Cochise) detail, not mentioned for Plan A",plan-a
+85,"Maria just moved to Illinois for a new state government job and is excited about the change of scenery. Focusing on her new Plan C coverage, what is the copay for an emergency room visit?",$275,Plan C: emergency room care $275 copay,plan-c
+86,"After years of using Plan D's benefits for his kids, Mark was surprised dental wasn't included — but that's a story for another day. Focusing back on Plan D, what is this plan's out-of-network family deductible?","$3,000","Plan D: out-of-network deductible $3,000 family",plan-d
+87,Which plan is the best one to choose?,Not stated in the document,The documents don't rank or recommend a best plan,
+88,Is Plan B's HDHP more affordable than Plan E's EPO?,Not stated in the document,Premiums (the main affordability factor) aren't stated in either document,
