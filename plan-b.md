@@ -1,4 +1,4 @@
-# PLAN B — Source Document
+# PLAN B: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What You Pay for Covered Services
 **Plan:** Auburn University HDHP Plan | Coverage For: Individual + Family | Plan Type: HDHP
@@ -23,7 +23,7 @@
 - **Do you need a referral to see a specialist?** No. You can see the specialist you choose without a
   referral.
 
-## Common Medical Events — What You Will Pay (Network / Out-of-Network)
+## Common Medical Events: What You Will Pay (Network / Out-of-Network)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 
@@ -61,11 +61,11 @@ All copayment and coinsurance costs shown are after your deductible has been met
 - Rehabilitation services: 20% coinsurance / 40% coinsurance. Combined maximum of 30 visits/year for
   occupational, physical, and speech therapy.
 - Habilitation services: 20% coinsurance / 40% coinsurance
-- Skilled nursing care: **Not Covered** — member pays 100%
+- Skilled nursing care: **Not Covered**, member pays 100%
 - Durable medical equipment: 20% coinsurance / 40% coinsurance
 - Hospice services: 20% coinsurance / 40% coinsurance. In Alabama, out-of-network not covered.
 - Children's eye exam: No charge, deductible does not apply / Not covered
-- Children's glasses: **Not Covered** — member pays 100%
+- Children's glasses: **Not Covered**, member pays 100%
 - Children's dental check-up: No charge, deductible does not apply / Not covered
 
 ## Excluded Services (Plan Generally Does NOT Cover)

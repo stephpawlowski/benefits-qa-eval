@@ -1,7 +1,7 @@
-# PLAN C — Source Document
+# PLAN C: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What You Pay for Covered Services
-**Plan:** State of Illinois (State HMO) — Health Network Only, Aetna | Coverage for: Individual + Family | Plan Type: HMO
+**Plan:** State of Illinois (State HMO), Health Network Only, Aetna | Coverage for: Individual + Family | Plan Type: HMO
 **Coverage Period:** 07/01/2024 – 06/30/2025
 **Source:** Illinois Department of Central Management Services, State of Illinois employee benefits
 (https://cms.illinois.gov/content/dam/soi/en/web/cms/benefits/stateemployee/documents/fy2025/sbc/Aetna-State-HMO.pdf)
@@ -11,7 +11,7 @@ state government's Central Management Services agency.
 ## Important Questions
 
 - **What is the overall deductible?** $0 for each Plan Year.
-- **Are there services covered before you meet your deductible?** No — this plan has no overall
+- **Are there services covered before you meet your deductible?** No, this plan has no overall
   deductible, so this question doesn't apply the way it does for deductible plans.
 - **Are there other deductibles for specific services?** Yes. $150 for prescription drugs. No other
   specific deductibles.
@@ -19,12 +19,12 @@ state government's Central Management Services agency.
   This plan has no out-of-network coverage except emergencies.
 - **What is not included in the out-of-pocket limit?** Premiums, balance-billing charges, and health
   care this plan doesn't cover.
-- **Will you pay less if you use a network provider?** Yes — this is a Health Network Only plan, so
+- **Will you pay less if you use a network provider?** Yes, this is a Health Network Only plan, so
   out-of-network care is not covered at all except in an emergency.
 - **Do you need a referral to see a specialist?** No. You can see the specialist you choose without a
   referral.
 
-## Common Medical Events — What You Will Pay (In-Network / Out-of-Network)
+## Common Medical Events: What You Will Pay (In-Network / Out-of-Network)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 
@@ -41,7 +41,7 @@ All copayment and coinsurance costs shown are after your deductible has been met
   Pharmacy Network / Not covered
 - Outpatient surgery facility fee: $300 copay/visit / Not covered
 - Outpatient surgery physician/surgeon fees: No charge / Not covered
-- Emergency room care: $275 copay/visit / $275 copay/visit (same both ways — out-of-network emergency
+- Emergency room care: $275 copay/visit / $275 copay/visit (same both ways: out-of-network emergency
   use is paid the same as in-network; no coverage for non-emergency out-of-network use)
 - Emergency medical transportation: No charge / No charge (same both ways for emergencies)
 - Urgent care: $35 copay/visit / Not covered

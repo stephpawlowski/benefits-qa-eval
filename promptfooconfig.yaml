@@ -1,4 +1,4 @@
-description: "Benefits/insurance plan Q&A checker (v3, RAG) — does the LLM answer coverage questions correctly when given retrieved excerpts (not full documents) from a 6-plan SBC library, and does retrieval itself pull back the right document? Chunks are embedded with Voyage AI and retrieved via cosine similarity (scripts/retrieval.js) instead of pasting all documents into every prompt."
+description: "Benefits/insurance plan Q&A checker (v3, RAG): does the LLM answer coverage questions correctly when given retrieved excerpts (not full documents) from a 6-plan SBC library, and does retrieval itself pull back the right document? Chunks are embedded with Voyage AI and retrieved via cosine similarity (scripts/retrieval.js) instead of pasting all documents into every prompt."
 
 prompts:
   - file://scripts/promptfoo-prompt.js

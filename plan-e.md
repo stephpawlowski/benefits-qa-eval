@@ -1,7 +1,7 @@
-# PLAN E — Source Document
+# PLAN E: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What it Costs
-**Plan:** Cochise Combined Trust — EPO Plan (BlueCross BlueShield of Arizona network) | Coverage for: Single + Family | Plan Type: EPO
+**Plan:** Cochise Combined Trust: EPO Plan (BlueCross BlueShield of Arizona network) | Coverage for: Single + Family | Plan Type: EPO
 **Coverage Period:** 07/01/2025 – 06/30/2026
 **Source:** Cochise County, Arizona government
 (https://www.cochise.az.gov/DocumentCenter/View/21707/EPO-Summary-of-Benefits-Fiscal-Year-2025-to-2026-PDF)
@@ -17,12 +17,12 @@ government employee benefit trust, published on the county's public website.
 - **What is the out-of-pocket limit for this plan?** $9,100 per participant / $18,200 per family.
 - **What is not included in the out-of-pocket limit?** Premiums, balance-billed charges, and health
   care this plan doesn't cover.
-- **Will you pay less if you use a network provider?** This plan only covers in-network care — there is
+- **Will you pay less if you use a network provider?** This plan only covers in-network care: there is
   no coverage for out-of-network providers except in a medical emergency.
 - **Do you need a referral to see a specialist?** No. You can see the specialist you choose without a
   referral.
 
-## Common Medical Events — What You Will Pay (In-Network / Out-of-Network)
+## Common Medical Events: What You Will Pay (In-Network / Out-of-Network)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 

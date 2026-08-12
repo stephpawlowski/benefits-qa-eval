@@ -1,12 +1,12 @@
 // Custom promptfoo assertion: did retrieval actually pull back the right
 // document(s) for this question? This is graded separately from whether the
 // final answer was correct (see promptfooconfig.yaml's defaultTest
-// assertion) — a question can have a correct answer despite bad retrieval
+// assertion): a question can have a correct answer despite bad retrieval
 // (the model got lucky, or the wrong-but-similar chunk still had the right
 // number on it), and a question can have perfect retrieval but a wrong
 // answer (the model misread a correctly-retrieved chunk). Grading these
 // separately is what makes a RAG eval more informative than an ordinary
-// Q&A eval — it tells you which half of the pipeline to fix.
+// Q&A eval: it tells you which half of the pipeline to fix.
 //
 // tests.csv's `expected_source` column names which plan doc(s) the correct
 // answer actually lives in (e.g. "plan-c", or "plan-a,plan-d" for a
@@ -30,7 +30,7 @@ module.exports = function assertRetrieval(output, context) {
 
   if (expectedSources.length === 0) {
     // No expected_source annotated for this row (shouldn't happen once
-    // tests.csv is fully filled in) — don't fail the run over a data gap.
+    // tests.csv is fully filled in), don't fail the run over a data gap.
     return { pass: true, score: 1, reason: 'No expected_source annotated; skipped.' };
   }
 

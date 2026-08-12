@@ -1,7 +1,7 @@
 // Splits a condensed plan-*.md document into small, independently retrievable
 // chunks. Used by scripts/build-index.js at index-build time. Kept in its own
 // module (rather than inlined) because both the offline index builder and any
-// future re-chunking / debugging script need the exact same logic — chunk
+// future re-chunking / debugging script need the exact same logic: chunk
 // boundaries have to be identical every time a document is re-indexed, or
 // retrieval quality drifts silently between runs.
 //

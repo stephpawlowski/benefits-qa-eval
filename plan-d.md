@@ -1,7 +1,7 @@
-# PLAN D — Source Document
+# PLAN D: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What You Pay for Covered Services
-**Plan:** Northwestern University — Choice Plus PPO Plan (UnitedHealthcare) | Coverage for: Family | Plan Type: PPO
+**Plan:** Northwestern University: Choice Plus PPO Plan (UnitedHealthcare) | Coverage for: Family | Plan Type: PPO
 **Coverage Period:** 01/01/2026 – 12/31/2026
 **Source:** Northwestern University Human Resources
 (https://hr.northwestern.edu/documents/benefits/sbc-ppo-2026.pdf)
@@ -24,7 +24,7 @@ university's HR site for employees and prospective employees.
 - **Do you need a referral to see a specialist?** No. You can see the specialist you choose without a
   referral.
 
-## Common Medical Events — What You Will Pay (Network / Out-of-Network)
+## Common Medical Events: What You Will Pay (Network / Out-of-Network)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 

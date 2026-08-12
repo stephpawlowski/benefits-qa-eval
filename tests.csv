@@ -84,6 +84,6 @@ id,question,expected,source,expected_source
 83,"Under Plan E, is coverage limited to CalPERS Access+ specialist self-referrals?",Not stated in the document,"Access+ self-referral is a Plan F (CalPERS) detail, not mentioned for Plan E",plan-e
 84,Does Plan A cap wellness care spending at $750 per plan participant for services not covered by healthcare reform?,Not stated in the document,"The $750 wellness cap is a Plan E (Cochise) detail, not mentioned for Plan A",plan-a
 85,"Maria just moved to Illinois for a new state government job and is excited about the change of scenery. Focusing on her new Plan C coverage, what is the copay for an emergency room visit?",$275,Plan C: emergency room care $275 copay,plan-c
-86,"After years of using Plan D's benefits for his kids, Mark was surprised dental wasn't included — but that's a story for another day. Focusing back on Plan D, what is this plan's out-of-network family deductible?","$3,000","Plan D: out-of-network deductible $3,000 family",plan-d
+86,"After years of using Plan D's benefits for his kids, Mark was surprised dental wasn't included, but that's a story for another day. Focusing back on Plan D, what is this plan's out-of-network family deductible?","$3,000","Plan D: out-of-network deductible $3,000 family",plan-d
 87,Which plan is the best one to choose?,Not stated in the document,The documents don't rank or recommend a best plan,
 88,Is Plan B's HDHP more affordable than Plan E's EPO?,Not stated in the document,Premiums (the main affordability factor) aren't stated in either document,

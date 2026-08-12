@@ -1,6 +1,6 @@
 // Tiny side channel between the prompt-building step and the grading step.
 //
-// promptfoo's custom prompt function only gets to return a prompt string —
+// promptfoo's custom prompt function only gets to return a prompt string;
 // there's no built-in way to hand the assertion function the list of chunks
 // that got retrieved for that question. But the prompt function and the
 // assertion both run inside the same promptfoo Node process, and Node

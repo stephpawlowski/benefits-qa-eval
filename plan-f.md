@@ -1,4 +1,4 @@
-# PLAN F — Source Document
+# PLAN F: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What You Pay For Covered Services
 **Plan:** CalPERS Access+ HMO (Blue Shield of California) | Coverage for: Individual + Family | Plan Type: HMO
@@ -24,7 +24,7 @@ employees through CalPERS, published on Blue Shield of California's public site.
   specialist only if you have a referral first (self-referral is available for Access+ Specialist
   visits specifically).
 
-## Common Medical Events — What You Will Pay (Plan Provider / Non-Plan Provider)
+## Common Medical Events: What You Will Pay (Plan Provider / Non-Plan Provider)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 

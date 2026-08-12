@@ -1,4 +1,4 @@
-# PLAN A — Source Document
+# PLAN A: Source Document
 
 **Title:** Summary of Benefits and Coverage: What this Plan Covers & What You Pay for Covered Services
 **Plan:** Insurance Company 1: Plan Option 1 | Coverage for: Family | Plan Type: PPO
@@ -23,7 +23,7 @@ standardized SBC template required under the Affordable Care Act.
 - **Do you need a referral to see a specialist?** Yes. This plan will pay some or all of the costs to see
   a specialist for covered services but only if you have a referral before you see the specialist.
 
-## Common Medical Events — What You Will Pay (Network / Out-of-Network)
+## Common Medical Events: What You Will Pay (Network / Out-of-Network)
 
 All copayment and coinsurance costs shown are after your deductible has been met, if a deductible applies.
 
