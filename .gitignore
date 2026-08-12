@@ -2,3 +2,4 @@ node_modules/
 .promptfoo/
 *.log
 .env
+results*.json

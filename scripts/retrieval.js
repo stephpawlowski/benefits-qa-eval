@@ -37,7 +37,35 @@ function cosineSimilarity(a, b) {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
-async function embedQuery(text, apiKey) {
+// promptfoo runs test cases concurrently (a handful at a time by default),
+// which would otherwise fire several embedding requests at Voyage in the
+// same second. Voyage's free/unfunded-account tier caps requests at 3/min,
+// so every embedQuery call funnels through this single shared queue, which
+// paces actual network requests under that limit no matter how many callers
+// are waiting on it at once. (Node caches this module by resolved path, so
+// every file that requires retrieval.js shares the same queue instance.)
+const MIN_MS_BETWEEN_REQUESTS = 21000; // ~2.85 requests/minute, under the 3 RPM cap
+const MAX_RETRIES = 6;
+let queue = Promise.resolve();
+let lastRequestAt = 0;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function schedule(fn) {
+  const run = queue.then(async () => {
+    const sinceLast = Date.now() - lastRequestAt;
+    if (lastRequestAt && sinceLast < MIN_MS_BETWEEN_REQUESTS) {
+      await sleep(MIN_MS_BETWEEN_REQUESTS - sinceLast);
+    }
+    lastRequestAt = Date.now();
+    return fn();
+  });
+  // One caller's failure shouldn't jam the queue for everyone waiting behind it.
+  queue = run.catch(() => {});
+  return run;
+}
+
+async function embedQueryOnce(text, apiKey, attempt = 1) {
   const res = await fetch('https://api.voyageai.com/v1/embeddings', {
     method: 'POST',
     headers: {
@@ -55,6 +83,15 @@ async function embedQuery(text, apiKey) {
     }),
   });
 
+  if (res.status === 429) {
+    if (attempt > MAX_RETRIES) {
+      throw new Error(`Voyage API error 429: rate limited after ${MAX_RETRIES} retries.`);
+    }
+    const waitMs = 15000 * attempt;
+    await sleep(waitMs);
+    return embedQueryOnce(text, apiKey, attempt + 1);
+  }
+
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`Voyage API error ${res.status}: ${body}`);
@@ -62,6 +99,10 @@ async function embedQuery(text, apiKey) {
 
   const json = await res.json();
   return json.data[0].embedding;
+}
+
+async function embedQuery(text, apiKey) {
+  return schedule(() => embedQueryOnce(text, apiKey));
 }
 
 // Returns the top-k chunks (highest cosine similarity first), each annotated
