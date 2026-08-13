@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benefits Q&A Checker — Eval Results</title>
+<meta property="og:title" content="Benefits Q&amp;A Checker — Stephanie Pawlowski">
+<meta property="og:description" content="88 questions answered via real retrieval-augmented generation over a 6-plan library of Summary of Benefits and Coverage documents — chunked, embedded, and retrieved with Voyage AI, graded on both retrieval accuracy and answer accuracy. A test of whether an LLM finds and sticks to the right source document instead of hallucinating.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://benefits.stephpawlowski.com/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Benefits Q&amp;A Checker — Stephanie Pawlowski">
+<meta name="twitter:description" content="88 questions answered via real retrieval-augmented generation over a 6-plan library of Summary of Benefits and Coverage documents — chunked, embedded, and retrieved with Voyage AI, graded on both retrieval accuracy and answer accuracy. A test of whether an LLM finds and sticks to the right source document instead of hallucinating.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafbfa;
+    --panel: #ffffff;
+    --panel-2: #eef2f2;
+    --border: #dde3e2;
+    --text: #33383a;
+    --muted: #7a7d7f;
+    --accent: #3d6870;
+    --pass: #4b7c62;
+    --pass-bg: rgba(75,124,98,0.1);
+    --fail: #b5533c;
+    --fail-bg: rgba(181,83,60,0.1);
+    --plana: #3d6870;
+    --planb: #b98b2e;
+    --font-body: 'Work Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-heading: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 48px 20px 80px; }
+  header { margin-bottom: 36px; }
+  header { text-align: center; }
+  h1 { font-family: var(--font-heading); font-weight: 600; font-size: 2.6rem; letter-spacing: 0.01em; margin: 0 0 10px; color: var(--accent); }
+  .subtitle { color: var(--muted); font-size: 0.98rem; max-width: 680px; margin-left: auto; margin-right: auto; text-align: left; }
+  .subtitle a { color: var(--accent); }
+
+  .byline { font-size: 0.8rem; color: var(--muted); margin-bottom: 16px; }
+  .byline a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(61,104,112,0.35); }
+  .byline a:hover { border-bottom-color: var(--accent); }
+  .tagline { font-family: var(--font-heading); font-size: 1.2rem; font-style: italic; color: var(--text); margin: 4px auto 14px; max-width: 680px; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; justify-content: center; }
+  .tag { background: var(--panel-2); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; font-size: 0.74rem; color: var(--muted); letter-spacing: 0.01em; }
+  .tldr { background: var(--pass-bg); border: 1px solid rgba(75,124,98,0.3); border-radius: 10px; padding: 14px 16px; margin: 20px auto 0; font-size: 0.88rem; max-width: 760px; text-align: left; }
+  .tldr a { color: var(--pass); }
+
+  .note {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--planb);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin: 20px auto 28px;
+    max-width: 760px;
+    text-align: left;
+    box-shadow: 0 2px 10px rgba(61,104,112,0.05);
+  }
+  .note b { color: var(--text); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin: 28px 0;
+  }
+  .stat {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(61,104,112,0.05);
+  }
+  .stat .num { font-family: var(--font-heading); font-size: 2.1rem; font-weight: 600; color: var(--accent); }
+  .stat .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; margin-top: 2px; }
+  .stat.accuracy .num { color: var(--pass); }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .controls input[type="text"] {
+    flex: 1;
+    min-width: 200px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+  }
+  .controls input[type="text"]::placeholder { color: var(--muted); }
+  .filter-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .filter-btn.active { color: #fff; border-color: var(--accent); background: var(--accent); }
+  .filter-btn:hover { color: var(--accent); }
+
+  .row {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(61,104,112,0.05);
+  }
+  .row-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+  }
+  .row-head:hover { background: var(--panel-2); }
+  .row-id { color: var(--muted); font-size: 0.8rem; width: 26px; flex-shrink: 0; }
+  .row-q { flex: 1; font-size: 0.88rem; }
+  .badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .badge.pass { background: var(--pass-bg); color: var(--pass); }
+  .badge.fail { background: var(--fail-bg); color: var(--fail); }
+  .badge.pending { background: var(--panel-2); color: var(--muted); }
+  .exp {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .chev { color: var(--muted); font-size: 0.75rem; transition: transform 0.15s; flex-shrink: 0; }
+  .row.open .chev { transform: rotate(90deg); }
+
+  .row-body {
+    display: none;
+    padding: 4px 14px 16px 14px;
+    border-top: 1px solid var(--border);
+  }
+  .row.open .row-body { display: block; }
+  .field { margin-top: 12px; }
+  .field .k { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .field .v { font-size: 0.88rem; white-space: pre-wrap; }
+  .field .v.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; }
+
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 0.9rem; }
+
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.8rem; }
+  footer a { color: var(--accent); }
+
+  .qa-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 24px 0 28px; box-shadow: 0 2px 10px rgba(61,104,112,0.05); }
+  .qa-panel h2 { font-family: var(--font-heading); font-weight: 600; font-size: 1.3rem; color: var(--accent); margin: 0 0 6px; }
+  .qa-sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 16px; max-width: 700px; }
+  .qa-textarea {
+    width: 100%; min-height: 140px; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 0.85rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; resize: vertical; margin-bottom: 4px;
+  }
+  .qa-char-count { font-size: 0.72rem; color: var(--muted); text-align: right; margin-bottom: 10px; }
+  .qa-char-count.over { color: var(--fail); }
+  .qa-input {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border); color: var(--text);
+    padding: 9px 12px; border-radius: 8px; font-size: 0.9rem; margin-bottom: 12px;
+  }
+  .qa-btn {
+    background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: 8px;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  }
+  .qa-btn:hover { opacity: 0.92; }
+  .qa-btn:disabled { opacity: 0.5; cursor: default; }
+  .qa-note { font-size: 0.78rem; color: var(--muted); margin-top: 8px; }
+  .qa-result { display: none; margin-top: 14px; padding: 14px 16px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 10px; }
+  .qa-result.show { display: block; }
+  .qa-answer { font-size: 1.05rem; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+  .qa-explanation { font-size: 0.88rem; color: var(--text); margin-bottom: 12px; }
+  .qa-error { color: var(--fail); font-size: 0.85rem; }
+  .qa-retrieved-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); margin-bottom: 6px; }
+  .qa-chip { display: inline-flex; align-items: center; gap: 6px; background: var(--panel); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; font-size: 0.76rem; margin: 0 6px 6px 0; }
+  .qa-chip .score { color: var(--muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="byline">
+      By Stephanie Pawlowski · <a href="https://stephpawlowski.com/" target="_blank" rel="noopener">About Me</a> · <a href="https://www.linkedin.com/in/stephaniepawlowski/" target="_blank" rel="noopener">LinkedIn</a> · Other project: <a href="https://access-checker.stephpawlowski.com">Access Policy Compliance Checker</a>
+    </div>
+    <h1>Benefits Q&A Checker</h1>
+    <div class="tagline">Real retrieval-augmented generation: can an AI find the right plan document in a library of six, and stick strictly to what it says?</div>
+    <div class="subtitle">
+      88 questions answered against a 6-plan library of real Summary of Benefits and Coverage (SBC)
+      documents (PPO, HDHP, HMO x2, EPO, and a second PPO — from CMS, Auburn University, the State of
+      Illinois, Northwestern University, Cochise County AZ, and CalPERS). This is v3 of the project, and
+      the first version that's actually RAG: each document is chunked and embedded with Voyage AI, and
+      every question is answered by retrieving the top-5 most relevant chunks — not by pasting every
+      document into the prompt — then generating an answer strictly from those chunks. Every test case
+      is graded twice: did retrieval pull back the right document, and was the final answer correct?
+      Includes 14 adversarial/hallucination-check questions and 14 cross-plan comparisons. Model tested:
+      <code>claude-sonnet-5</code>. Full write-up on
+      <a href="https://github.com/stephpawlowski/benefits-qa-eval" target="_blank" rel="noopener">GitHub</a>.
+    </div>
+    <div class="tags">
+      <span class="tag">LLM evaluation design</span>
+      <span class="tag">Retrieval-augmented generation</span>
+      <span class="tag">Embeddings / vector search</span>
+      <span class="tag">Hallucination testing</span>
+      <span class="tag">JavaScript</span>
+    </div>
+    <div class="tldr">
+      <b>TL;DR:</b> 85.2% answer accuracy (75/88), 90.9% retrieval accuracy (80/88), and — notably — the
+      model never once stated a wrong fact with confidence: every failure was an accurate "not stated in
+      the document" triggered by incomplete retrieval, not a hallucination. The clearest weak spot is
+      cross-plan comparisons: retrieval found both plans' chunks 100% of the time, but the model only
+      answered correctly 60% of the time (6/10) — a case where good retrieval didn't guarantee good
+      reasoning. Zero hallucinations on all 8 adversarial/absent-fact questions.
+    </div>
+    <div class="note">
+      <b>Grading note:</b> the raw eval run scored 76/88 (86.4%) on the automated substring grader. One
+      of those, question #44, is a false positive: the model answered "Not stated in the document" to a
+      yes/no question, and the grader's substring check matched because the word "not" contains "no."
+      The stats above are manually corrected for that one case (75/88, 85.2%) — the table below still
+      shows the raw per-question grading exactly as promptfoo scored it, including that one mismatch,
+      so nothing here is hidden.
+    </div>
+  </header>
+
+  <div class="qa-panel" id="qa-panel">
+    <h2>Ask the benefits library</h2>
+    <div class="qa-sub">
+      Ask a question about any of the 6 plans in this library (Plan A through Plan F — see the README
+      for what each one is). This is the real RAG pipeline running live: your question gets embedded,
+      compared against ~260 precomputed chunks from the 6 source documents, and the top 5 matching
+      chunks are retrieved and shown below the answer — so you can see exactly what the model was (and
+      wasn't) given to work with. No API key needed on your end, and nothing is stored.
+    </div>
+    <input type="text" class="qa-input" id="rag-question" placeholder="e.g. Does Plan E require a referral to see a specialist?" maxlength="500">
+    <button class="qa-btn" id="rag-ask-btn">Ask</button>
+    <div class="qa-note">Limited to a handful of requests per visitor per hour.</div>
+    <div class="qa-result" id="rag-result"></div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Search questions, answers…">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="pass">Passed</button>
+    <button class="filter-btn" data-filter="fail">Failed</button>
+    <button class="filter-btn" data-filter="pending">Pending</button>
+  </div>
+
+  <div id="rows"></div>
+  <div class="empty" id="empty" style="display:none;">No matching questions.</div>
+
+  <footer>
+    Static page, no live API calls. Data generated by <a href="https://www.promptfoo.dev/" target="_blank" rel="noopener">promptfoo</a>.
+    Rebuild by re-running the eval and regenerating this page.
+    <br><br>
+    Built by <a href="https://www.linkedin.com/in/stephaniepawlowski/" target="_blank" rel="noopener">Stephanie Pawlowski</a> ·
+    Other project: <a href="https://access-checker.stephpawlowski.com">Access Policy Compliance Checker</a> ·
+    <a href="https://github.com/stephpawlowski/benefits-qa-eval" target="_blank" rel="noopener">Source on GitHub</a>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"id":1,"question":"For Plan A (the PPO plan), what is the individual deductible?","expected":"$500","source":"Plan A: overall deductible $500/individual","expected_source":"plan-a","output":"Not stated in the document\n\nThe provided excerpts for Plan A only include information about what is not included in the out-of-pocket limit, not the deductible amount.","pass":false,"retrieval_pass":true,"retrieved":["plan-c","plan-c","plan-e","plan-b","plan-a"]},{"id":2,"question":"What is the family deductible for Plan A?","expected":"$1,000","source":"Plan A: overall deductible $1,000/family","expected_source":"plan-a","output":"$1,000\n\nPlan A (CMS reference PPO) has a family deductible of $1,000, as stated in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-a","plan-b","plan-e","plan-e"]},{"id":3,"question":"Under Plan A, are preventive care and primary care services covered before you meet your deductible?","expected":"Yes","source":"Plan A: Yes, preventive and primary care covered before deductible","expected_source":"plan-a","output":"Yes\n\nUnder Plan A (CMS reference PPO), preventive care and primary care services are covered before you meet your deductible.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-d","plan-e","plan-b"]},{"id":4,"question":"What is the specific deductible for prescription drug coverage under Plan A?","expected":"$300","source":"Plan A: $300 for prescription drug coverage","expected_source":"plan-a","output":"Not stated in the document\n\nNo excerpt from Plan A is provided in the retrieved excerpts, so this fact cannot be confirmed.","pass":false,"retrieval_pass":false,"retrieved":["plan-c","plan-c","plan-b","plan-e","plan-e"]},{"id":5,"question":"What is Plan A's in-network out-of-pocket limit for a family?","expected":"$5,000","source":"Plan A: out-of-pocket limit network $5,000 family","expected_source":"plan-a","output":"$5,000\n\nThis is from Plan A (CMS reference PPO), which states the network out-of-pocket limit is $2,500 individual / $5,000 family.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-a","plan-d","plan-e"]},{"id":6,"question":"Does Plan A require a referral to see a specialist?","expected":"Yes","source":"Plan A: referral required to see a specialist","expected_source":"plan-a","output":"Yes\n\nPlan A (CMS reference PPO) requires a referral before seeing a specialist for the plan to cover the costs.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":7,"question":"What is the in-network copay for a specialist visit under Plan A?","expected":"$50","source":"Plan A: specialist visit $50 copay","expected_source":"plan-a","output":"$50 copay/visit\n\nThis is stated in Excerpt 1 for Plan A (CMS reference PPO), network specialist visit cost.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-d","plan-a","plan-e","plan-c"]},{"id":8,"question":"What is the in-network copay for urgent care under Plan A?","expected":"$30","source":"Plan A: urgent care $30 copay","expected_source":"plan-a","output":"$30 copay/visit\n\nThis is the Network (in-network) urgent care copay listed for Plan A (CMS reference PPO).","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-c","plan-a","plan-e","plan-f"]},{"id":9,"question":"Under Plan A, what is the in-network cost sharing for emergency room care?","expected":"20%","source":"Plan A: emergency room care 20% coinsurance","expected_source":"plan-a","output":"Not stated in the document\n\nThe retrieved excerpts do not include any information about \"Plan A.\"","pass":false,"retrieval_pass":false,"retrieved":["plan-c","plan-d","plan-f","plan-e","plan-e"]},{"id":10,"question":"In Plan A's coverage example for Peg having a baby, what is the total Peg would pay?","expected":"$2,560","source":"Plan A: Peg coverage example total $2,560","expected_source":"plan-a","output":"$2,560\nPlan A (CMS reference PPO) states the total Peg would pay is $2,560 for this coverage example.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-d","plan-a","plan-e","plan-c"]},{"id":11,"question":"What is Plan B's in-network individual (self-only) deductible?","expected":"$2,500","source":"Plan B: overall deductible $2,500 self-only in-network","expected_source":"plan-b","output":"$2,500\n\nThis fact comes from Plan B (Auburn University HDHP), which states the in-network deductible is $2,500/self-only or $5,000/family.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-b","plan-c","plan-e","plan-c"]},{"id":12,"question":"What is Plan B's in-network family deductible?","expected":"$5,000","source":"Plan B: overall deductible $5,000 family in-network","expected_source":"plan-b","output":"$5,000\n\nPlan B (Auburn University HDHP)'s in-network family deductible is $5,000, as stated in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-b","plan-e","plan-c","plan-a"]},{"id":13,"question":"Does Plan B require a referral to see a specialist?","expected":"No","source":"Plan B: no referral required","expected_source":"plan-b","output":"No.\n\nPlan B (Auburn University HDHP) states you can see the specialist you choose without a referral.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":14,"question":"Under Plan B, are mental health outpatient services covered?","expected":"Not Covered","source":"Plan B: mental health outpatient services Not Covered","expected_source":"plan-b","output":"Not Covered\n\nUnder Plan B (Auburn University HDHP), mental health/behavioral health/substance abuse outpatient services are not covered, whether in-network or out-of-network.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-b","plan-c","plan-f","plan-a"]},{"id":15,"question":"What is Plan B's Tier 1 drug copay at a retail pharmacy?","expected":"$15","source":"Plan B: Tier 1 drugs $15 copay retail","expected_source":"plan-b","output":"Not stated in the document\n\nThe excerpts only include Plan B's Tier 3 drug copay information; no Tier 1 copay for Plan B is provided.","pass":false,"retrieval_pass":true,"retrieved":["plan-c","plan-d","plan-d","plan-a","plan-b"]},{"id":16,"question":"What is Plan B's in-network out-of-pocket limit for a family?","expected":"$10,000","source":"Plan B: out-of-pocket limit in-network $10,000 family","expected_source":"plan-b","output":"$10,000\n\nThis is Plan B's (Auburn University HDHP) in-network family out-of-pocket limit, as stated in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-a","plan-e","plan-d"]},{"id":17,"question":"Under Plan B, are children's glasses covered?","expected":"Not Covered","source":"Plan B: children's glasses Not Covered, member pays 100%","expected_source":"plan-b","output":"Not stated in the document\n\nNo excerpt for Plan B is provided among the retrieved excerpts, so its coverage of children's glasses cannot be determined.","pass":false,"retrieval_pass":false,"retrieved":["plan-e","plan-a","plan-d","plan-c","plan-f"]},{"id":18,"question":"Under Plan B, is skilled nursing care covered?","expected":"Not Covered","source":"Plan B: skilled nursing care Not Covered, member pays 100%","expected_source":"plan-b","output":"Not Covered\n\nUnder Plan B (Auburn University HDHP), skilled nursing care is not covered, and the member pays 100% of the cost.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-f","plan-c","plan-b","plan-a"]},{"id":19,"question":"Under Plan B, what is the combined yearly visit maximum for occupational, physical, and speech therapy?","expected":"30","source":"Plan B: combined maximum of 30 visits/year","expected_source":"plan-b","output":"30 visits/year\n\nAccording to Excerpt 2, Plan B (Auburn University HDHP) sets a combined maximum of 30 visits/year for occupational, physical, and speech therapy.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-b","plan-e","plan-e","plan-a"]},{"id":20,"question":"Under Plan B, if a provider is located in Alabama, what is the out-of-network coinsurance for a primary care visit?","expected":"50%","source":"Plan B: in Alabama, out-of-network primary care is 50%","expected_source":"plan-b","output":"50%\n\nUnder Plan B (Auburn University HDHP), the excerpt states that in Alabama, the out-of-network coinsurance for a primary care visit is 50%.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-b","plan-b","plan-b","plan-b"]},{"id":21,"question":"What is Plan C's overall deductible?","expected":"$0","source":"Plan C: overall deductible $0","expected_source":"plan-c","output":"$0\n\nThis is stated in Excerpt 1 for Plan C (Illinois State Employees HMO), which specifies an overall deductible of $0 for each Plan Year.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-b","plan-e","plan-c","plan-e"]},{"id":22,"question":"What is the specific deductible for prescription drugs under Plan C?","expected":"$150","source":"Plan C: $150 for prescription drugs","expected_source":"plan-c","output":"$150\n\nPlan C has a specific $150 drug deductible that applies before preferred generic drug copays, as stated in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-c","plan-d","plan-d","plan-d"]},{"id":23,"question":"What is Plan C's in-network out-of-pocket limit for a family?","expected":"$6,000","source":"Plan C: out-of-pocket limit in-network $6,000 family","expected_source":"plan-c","output":"$6,000\n\nPlan C's (Illinois State Employees HMO) in-network out-of-pocket limit for a family is $6,000, as stated in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-d","plan-a","plan-e"]},{"id":24,"question":"Does Plan C require a referral to see a specialist?","expected":"No","source":"Plan C: no referral required","expected_source":"plan-c","output":"No.\n\nPlan C (Illinois State Employees HMO) does not require a referral\u2014you can see the specialist you choose without one.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":25,"question":"What is the copay for a specialist visit under Plan C?","expected":"$35","source":"Plan C: specialist visit $35 copay","expected_source":"plan-c","output":"$35\n\nThe specialist visit copay under Plan C (Illinois State Employees HMO) is $35 per visit (in-network), with out-of-network specialist visits not covered.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-d","plan-c","plan-e","plan-a"]},{"id":26,"question":"What is the copay for an emergency room visit under Plan C?","expected":"$275","source":"Plan C: emergency room care $275 copay","expected_source":"plan-c","output":"$275 copay/visit\n\nThis is from Plan C (Illinois State Employees HMO), which charges $275 per visit for emergency room care, applied the same for in-network and out-of-network use.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-c","plan-d","plan-c","plan-e"]},{"id":27,"question":"Under Plan C, is out-of-network care covered for non-emergency situations?","expected":"No","source":"Plan C: Health Network Only, out-of-network not covered except emergency","expected_source":"plan-c","output":"No\n\nUnder Plan C (Illinois State Employees HMO), out-of-network care is not covered except in an emergency, as it is a Health Network Only plan.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-c","plan-b","plan-e","plan-c"]},{"id":28,"question":"What is the copay for urgent care under Plan C?","expected":"$35","source":"Plan C: urgent care $35 copay","expected_source":"plan-c","output":"$35 copay/visit\n\nThis is the in-network urgent care copay listed for Plan C (Illinois State Employees HMO).","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-e","plan-a","plan-c","plan-e"]},{"id":29,"question":"Under Plan C, how many visits per plan year are allowed for combined physical, occupational, and speech therapy?","expected":"60","source":"Plan C: rehabilitation services limit 60 visits/plan year","expected_source":"plan-c","output":"60 visits/plan year\n\nThis limit for combined physical, occupational, and speech therapy is stated in Excerpt 1 for Plan C (Illinois State Employees HMO).","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-b","plan-e","plan-e","plan-a"]},{"id":30,"question":"In Plan C's coverage example for Peg having a baby, what is the total Peg would pay?","expected":"$470","source":"Plan C: Peg coverage example total $470","expected_source":"plan-c","output":"Not stated in the document\n\nNo excerpt for Plan C's \"Peg is Having a Baby\" coverage example was provided in the retrieved excerpts.","pass":false,"retrieval_pass":false,"retrieved":["plan-f","plan-d","plan-a","plan-e","plan-b"]},{"id":31,"question":"What is Plan D's network individual deductible?","expected":"$750","source":"Plan D: network deductible $750 individual","expected_source":"plan-d","output":"$750\n\nPlan D (Northwestern University PPO) has a network individual deductible of $750 per calendar year, as stated in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-d","plan-c","plan-b","plan-a","plan-b"]},{"id":32,"question":"What is Plan D's network family deductible?","expected":"$1,500","source":"Plan D: network deductible $1,500 family","expected_source":"plan-d","output":"$1,500\n\nPlan D (Northwestern University PPO) states a network family deductible of $1,500.","pass":true,"retrieval_pass":true,"retrieved":["plan-d","plan-b","plan-c","plan-a","plan-b"]},{"id":33,"question":"What is Plan D's network out-of-pocket limit for an individual?","expected":"$3,000","source":"Plan D: network out-of-pocket limit $3,000 individual","expected_source":"plan-d","output":"$3,000\n\nThis figure comes from Excerpt 3 for Plan D (Northwestern University PPO), which lists the network out-of-pocket limit as $3,000 individual / $6,000 family.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-b","plan-d","plan-c","plan-e"]},{"id":34,"question":"Does Plan D require a referral to see a specialist?","expected":"No","source":"Plan D: no referral required","expected_source":"plan-d","output":"No.\n\nAccording to Excerpt 5 (Plan D \u2014 Northwestern University PPO), you can see the specialist you choose without a referral.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":35,"question":"What is the network copay for a primary care visit under Plan D?","expected":"$40","source":"Plan D: primary care visit $40 copay network","expected_source":"plan-d","output":"$40 copay/visit\n\nUnder Plan D (Northwestern University PPO), the network primary care visit copay is $40 per visit, with the deductible not applying (Excerpt 3).","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-d","plan-a","plan-d"]},{"id":36,"question":"What is the network copay for a specialist visit under Plan D?","expected":"$55","source":"Plan D: specialist visit $55 copay network","expected_source":"plan-d","output":"$55\n\nUnder Plan D (Northwestern University PPO), the network specialist visit copay is $55 per visit, and the deductible does not apply.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-d","plan-e","plan-c","plan-a"]},{"id":37,"question":"What is the copay for an emergency room visit under Plan D, before coinsurance applies?","expected":"$150","source":"Plan D: emergency room $150 copay then 20% coinsurance","expected_source":"plan-d","output":"$150\n\nPlan D (Northwestern University PPO) charges a $150 copay per ER visit before the 20% coinsurance applies.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-d","plan-c","plan-a","plan-d"]},{"id":38,"question":"Under Plan D, are children's eye exams covered?","expected":"Not covered","source":"Plan D: children's eye exam Not covered","expected_source":"plan-d","output":"Not stated in the document\n\nThere is no excerpt provided for Plan D regarding children's eye exams.","pass":false,"retrieval_pass":false,"retrieved":["plan-e","plan-f","plan-b","plan-a","plan-e"]},{"id":39,"question":"Under Plan D, how many outpatient rehabilitation visits per calendar year are allowed?","expected":"Unlimited","source":"Plan D: outpatient rehabilitation services unlimited per calendar year","expected_source":"plan-d","output":"Unlimited\n\nPlan D (Northwestern University PPO) allows unlimited rehabilitation visits per calendar year, as stated in Excerpt 5.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-e","plan-b","plan-d"]},{"id":40,"question":"What is Plan D's separate prescription drug out-of-pocket maximum for an individual?","expected":"$1,500","source":"Plan D: Rx out-of-pocket maximum $1,500 individual","expected_source":"plan-d","output":"$1,500\n\nPlan D (Northwestern University PPO) has a separate Rx out-of-pocket maximum of $1,500 individual / $3,000 family (Excerpt 1).","pass":true,"retrieval_pass":true,"retrieved":["plan-d","plan-f","plan-e","plan-b","plan-b"]},{"id":41,"question":"What is Plan E's per-participant deductible?","expected":"$600","source":"Plan E: deductible $600 per participant","expected_source":"plan-e","output":"$600\n\nPlan E (Cochise Combined Trust EPO)'s overall deductible is $600 per participant, as stated in Excerpt 3.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-e","plan-a","plan-c"]},{"id":42,"question":"What is Plan E's per-family deductible?","expected":"$1,800","source":"Plan E: deductible $1,800 per family","expected_source":"plan-e","output":"$1,800\n\nPlan E's (Cochise Combined Trust EPO) overall deductible is $600 per participant / $1,800 per family, per Excerpt 5.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-a","plan-b","plan-e"]},{"id":43,"question":"What is Plan E's out-of-pocket limit per participant?","expected":"$9,100","source":"Plan E: out-of-pocket limit $9,100 per participant","expected_source":"plan-e","output":"$9,100\n\nThis is Plan E's out-of-pocket limit per participant (Cochise Combined Trust EPO), as stated in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-a","plan-b","plan-c","plan-f"]},{"id":44,"question":"Does Plan E require a referral to see a specialist?","expected":"No","source":"Plan E: no referral required","expected_source":"plan-e","output":"Not stated in the document\n\nNo excerpt for Plan E was provided among the retrieved documents, so this cannot be answered from the given material.","pass":true,"retrieval_pass":false,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":45,"question":"What is the copay for a specialist visit under Plan E?","expected":"$45","source":"Plan E: specialist visit $45 copay","expected_source":"plan-e","output":"$45 copay/visit\n\nThis is stated in Excerpt 3 (Plan E \u2014 Cochise Combined Trust EPO), which lists the in-network specialist visit copay as $45 per visit.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-d","plan-e","plan-c","plan-a"]},{"id":46,"question":"Under Plan E, is out-of-network care covered outside of a medical emergency?","expected":"No","source":"Plan E: only in-network care covered except medical emergency","expected_source":"plan-e","output":"No\n\nUnder Plan E (Cochise Combined Trust EPO), out-of-network care is not covered except in a medical emergency, as stated in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-c","plan-c","plan-b"]},{"id":47,"question":"What is the copay for an emergency room visit under Plan E, before coinsurance applies?","expected":"$250","source":"Plan E: emergency room $250 copay plus 20% coinsurance","expected_source":"plan-e","output":"$250\n\nAccording to Excerpt 1, Plan E (Cochise Combined Trust EPO) charges a $250 copay per occurrence for emergency room care, plus 20% coinsurance after the deductible.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-d","plan-c","plan-a","plan-a"]},{"id":48,"question":"Under Plan E, how many chiropractic visits per plan year are covered?","expected":"20","source":"Plan E: chiropractic care limited to 20 visits/plan year","expected_source":"plan-e","output":"20 visits/plan year\n\nPlan E (Cochise Combined Trust EPO) limits chiropractic care to 20 visits per plan year, as stated in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-c","plan-e","plan-e","plan-e"]},{"id":49,"question":"What is the in-network copay for a 30-day supply of generic drugs under Plan E?","expected":"$10","source":"Plan E: generic drugs $10 copay 30-day supply","expected_source":"plan-e","output":"$10 copay\n\nThis is the in-network copay for a 30-day supply of generic drugs under Plan E (Cochise Combined Trust EPO), as stated in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-e","plan-c","plan-e","plan-c"]},{"id":50,"question":"In Plan E's coverage example for Mia's simple fracture, what is the total Mia would pay?","expected":"$1,350","source":"Plan E: Mia coverage example total $1,350","expected_source":"plan-e","output":"$1,350\n\nPlan E (Cochise Combined Trust EPO)'s Coverage Examples excerpt states that the total Mia would pay is $1,350.","pass":true,"retrieval_pass":true,"retrieved":["plan-d","plan-e","plan-b","plan-c","plan-a"]},{"id":51,"question":"What is Plan F's overall deductible?","expected":"$0","source":"Plan F: overall deductible $0","expected_source":"plan-f","output":"$0\n\nPlan F's (CalPERS Access+ HMO) overall deductible is $0, as stated in Excerpt 4.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-b","plan-e","plan-f","plan-a"]},{"id":52,"question":"What is Plan F's medical out-of-pocket limit for a family?","expected":"$3,000","source":"Plan F: medical out-of-pocket limit $3,000 family","expected_source":"plan-f","output":"$3,000\n\nPlan F's medical out-of-pocket limit for a family is $3,000, as stated in Excerpt 1 (Plan F \u2014 CalPERS Access+ HMO).","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-e","plan-d","plan-c","plan-b"]},{"id":53,"question":"Does Plan F require a referral to see a specialist?","expected":"Yes","source":"Plan F: referral required to see a specialist","expected_source":"plan-f","output":"Yes\nPlan F (CalPERS Access+ HMO) requires a referral to see a specialist, though self-referral is available specifically for Access+ Specialist visits.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":54,"question":"What is the copay for an Access+ Specialist visit under Plan F?","expected":"$30","source":"Plan F: Access+ Specialist visit $30 copay","expected_source":"plan-f","output":"$30/visit\n\nThis is from Plan F (CalPERS Access+ HMO), which lists an Access+ Specialist copay of $30 per visit.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-f","plan-a","plan-d","plan-e"]},{"id":55,"question":"What is the copay for a primary care visit under Plan F?","expected":"$15","source":"Plan F: primary care visit $15 copay","expected_source":"plan-f","output":"$15/visit\n\nPlan F (CalPERS Access+ HMO) charges a $15 copay per visit for primary care visits with a Plan Provider.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-d","plan-a","plan-f"]},{"id":56,"question":"What is the emergency room facility fee copay under Plan F?","expected":"$50","source":"Plan F: emergency room facility fee $50","expected_source":"plan-f","output":"$50/visit\n\nPlan F (CalPERS Access+ HMO) charges a $50 per visit emergency room facility fee, with no charge for the physician fee.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-c","plan-d","plan-b","plan-f"]},{"id":57,"question":"Under Plan F, is home health care covered?","expected":"Yes","source":"Plan F: home health care No charge (covered)","expected_source":"plan-f","output":"Yes\n\nUnder Plan F (CalPERS Access+ HMO), home health care is covered at no charge with a Plan Provider (preauthorization required), though it is not covered when using a Non-Plan Provider.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-f","plan-c","plan-a","plan-b"]},{"id":58,"question":"Under Plan F, how many days of skilled nursing care are covered per benefit period?","expected":"100","source":"Plan F: skilled nursing care limited to 100 days per benefit period","expected_source":"plan-f","output":"100 days\n\nUnder Plan F (CalPERS Access+ HMO), skilled nursing care is limited to 100 days per member per benefit period.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-e","plan-a","plan-c","plan-b"]},{"id":59,"question":"What is Plan F's pharmacy out-of-pocket limit for an individual?","expected":"$7,700","source":"Plan F: pharmacy out-of-pocket limit $7,700 individual","expected_source":"plan-f","output":"$7,700\n\nPlan F (CalPERS Access+ HMO) lists a pharmacy out-of-pocket limit of $7,700 for an individual.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-d","plan-c","plan-e","plan-b"]},{"id":60,"question":"In Plan F's coverage example for managing Joe's type 2 diabetes, what is the total Joe would pay?","expected":"$610","source":"Plan F: Joe coverage example total $610","expected_source":"plan-f","output":"$610\n\nPlan F (CalPERS Access+ HMO) states the total Joe would pay for managing his type 2 diabetes is $610.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-c","plan-d","plan-e","plan-b"]},{"id":61,"question":"Which plan type is Plan E?","expected":"EPO","source":"Plan E: Plan Type EPO","expected_source":"plan-e","output":"EPO\n\nPlan E (Cochise Combined Trust) is listed as an EPO plan (BlueCross BlueShield of Arizona network) in Excerpt 1.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-e","plan-c","plan-e","plan-a"]},{"id":62,"question":"Which plan type is Plan C?","expected":"HMO","source":"Plan C: Plan Type HMO","expected_source":"plan-c","output":"HMO\n\nPlan C (State of Illinois State HMO, Aetna) is listed as Plan Type: HMO in the header excerpt.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-a","plan-e","plan-f","plan-b"]},{"id":63,"question":"Which plan type is Plan F?","expected":"HMO","source":"Plan F: Plan Type HMO","expected_source":"plan-f","output":"HMO\nPlan F (CalPERS Access+ HMO) is listed as Plan Type: HMO in its header excerpt.","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-c","plan-e","plan-c","plan-a"]},{"id":64,"question":"Which plan type is Plan D?","expected":"PPO","source":"Plan D: Plan Type PPO","expected_source":"plan-d","output":"Not stated in the document\n\nThe excerpts provided do not include any information about Plan D.","pass":false,"retrieval_pass":false,"retrieved":["plan-c","plan-e","plan-c","plan-a","plan-c"]},{"id":65,"question":"Between Plan A and Plan D, which one has the lower network individual deductible?","expected":"Plan A","source":"Plan A $500 vs Plan D $750 individual deductible","expected_source":"plan-a,plan-d","output":"Not stated in the document\n\nPlan A's network individual deductible is not provided in the excerpts, so a comparison with Plan D's $750 network individual deductible (Excerpt 2) cannot be made.","pass":false,"retrieval_pass":true,"retrieved":["plan-c","plan-d","plan-b","plan-a","plan-d"]},{"id":66,"question":"Between Plan B and Plan E, which one has the higher family deductible?","expected":"Plan B","source":"Plan B $5,000 vs Plan E $1,800 family deductible","expected_source":"plan-b,plan-e","output":"Plan B\nPlan B's in-network family deductible is $5,000 (Excerpt 4), which is higher than Plan E's family deductible of $1,800 (Excerpt 5).","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-a","plan-b","plan-e"]},{"id":67,"question":"Between Plan C and Plan F, which one has the higher family out-of-pocket limit?","expected":"Plan C","source":"Plan C $6,000 vs Plan F $3,000 family out-of-pocket limit","expected_source":"plan-c,plan-f","output":"Not stated in the document\n\nPlan C's out-of-pocket limit is not included in the retrieved excerpts, so a comparison cannot be made.","pass":false,"retrieval_pass":true,"retrieved":["plan-e","plan-f","plan-d","plan-b","plan-a"]},{"id":68,"question":"Between Plan A and Plan D, which one covers children's eye exams?","expected":"Plan A","source":"Plan A covers ($35 copay) vs Plan D Not covered","expected_source":"plan-a,plan-d","output":"Not stated in the document\n\nPlan D's coverage for children's eye exams is not included in the retrieved excerpts, so a comparison cannot be made (only Plan A's coverage, $35 copay/visit, is documented).","pass":false,"retrieval_pass":true,"retrieved":["plan-e","plan-f","plan-a","plan-b","plan-e"]},{"id":69,"question":"Between Plan D and Plan A, which one has unlimited outpatient rehabilitation visits per year?","expected":"Plan D","source":"Plan D unlimited vs Plan A limited to 60 visits/year","expected_source":"plan-a,plan-d","output":"Plan D\n\nPlan D's rehabilitation services have unlimited visits per calendar year (Excerpt 4); Plan A is not included in the retrieved excerpts, so no information is available for it.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-e","plan-d","plan-b"]},{"id":70,"question":"Between Plan C and Plan F, which one requires a referral to see a specialist?","expected":"Plan F","source":"Plan C no referral vs Plan F referral required","expected_source":"plan-c,plan-f","output":"Plan F\n\nPlan F (CalPERS Access+ HMO) requires a referral to see a specialist, while Plan C (Illinois State Employees HMO) does not.","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-f","plan-b","plan-c","plan-d"]},{"id":71,"question":"Between Plan B and Plan E, which one covers mental health outpatient services?","expected":"Plan E","source":"Plan B Not Covered vs Plan E covered","expected_source":"plan-b,plan-e","output":"Not stated in the document\n\nPlan B's mental health outpatient services are explicitly \"Not Covered\" per Excerpt 1, but no information about Plan E was provided in the excerpts.","pass":false,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-b","plan-f","plan-a"]},{"id":72,"question":"Between Plan A and Plan C, which one has a higher specialist visit copay?","expected":"Plan A","source":"Plan A $50 vs Plan C $35 specialist copay","expected_source":"plan-a,plan-c","output":"Plan A\n\nPlan A's specialist visit copay is $50 (Excerpt 1), which is higher than Plan C's $35 copay (Excerpt 2).","pass":true,"retrieval_pass":true,"retrieved":["plan-a","plan-c","plan-d","plan-e","plan-a"]},{"id":73,"question":"Between Plan D and Plan F, which one has a lower out-of-pocket limit for an individual?","expected":"Plan F","source":"Plan F $1,500 medical vs Plan D $3,000 network individual out-of-pocket limit","expected_source":"plan-d,plan-f","output":"Plan F\n\nPlan F (CalPERS Access+ HMO) has a medical out-of-pocket limit of $1,500 per individual, which is lower than Plan D's (Northwestern University PPO) network individual limit of $3,000.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-d","plan-a","plan-f","plan-b"]},{"id":74,"question":"Between Plan C and Plan E, which one has a $0 overall deductible?","expected":"Plan C","source":"Plan C $0 vs Plan E $600 deductible","expected_source":"plan-c,plan-e","output":"Plan C\n\nPlan C has a $0 overall deductible per Plan Year, while Plan E has a $600 per participant / $1,800 per family deductible (Excerpts 1 and 4).","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-f","plan-b","plan-e","plan-e"]},{"id":75,"question":"What is the monthly premium for Plan C?","expected":"Not stated in the document","source":"Premiums are provided separately, not stated in any SBC","expected_source":"","output":"Not stated in the document\n\nThe excerpts for Plan C only cover out-of-pocket limit exclusions and do not mention the monthly premium.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":76,"question":"What is the average hold time when calling Plan E's customer service line?","expected":"Not stated in the document","source":"Not covered by any SBC document","expected_source":"","output":"Not stated in the document\n\nThe excerpts for Plan E do not include any information about customer service hold times.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":77,"question":"What is the annual premium increase percentage for Plan F compared to last year?","expected":"Not stated in the document","source":"Not covered by any SBC document","expected_source":"","output":"Not stated in the document\n\nThe provided excerpts for Plan F only include header information and do not mention any premium increase percentage.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":78,"question":"How many in-network primary care physicians are available within 10 miles of a typical member's home under Plan D?","expected":"Not stated in the document","source":"Not covered by any SBC document","expected_source":"","output":"Not stated in the document.\n\nThis information is not provided in the excerpts for Plan D (Northwestern University PPO) or any other plan.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":79,"question":"What is the individual deductible for Plan G?","expected":"Not stated in the document","source":"Plan G does not exist in this document library","expected_source":"","output":"Not stated in the document\n\nThere is no Plan G in the retrieved excerpts, which only cover Plans A through E.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":80,"question":"Does Plan H, the university's dental-only plan, require a referral to see a specialist?","expected":"Not stated in the document","source":"Plan H does not exist in this document library","expected_source":"","output":"Not stated in the document\n\nNo excerpt for Plan H is provided in the retrieved material, so the referral requirement for this plan cannot be determined.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":81,"question":"Under Plan C, does Auburn University's TigerMeds program waive the Tier 1 drug copay?","expected":"Not stated in the document","source":"TigerMeds/AUPCC is a Plan B (Auburn) detail, not mentioned for Plan C","expected_source":"plan-c","output":"Not stated in the document.\nThe TigerMeds waiver is associated with Plan B (Auburn University HDHP) in Excerpt 1, not Plan C (Illinois State Employees HMO), which shows no such waiver in Excerpt 2.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-a","plan-a","plan-d"]},{"id":82,"question":"Does Plan F's out-of-network coinsurance change specifically because a provider is located in Alabama?","expected":"Not stated in the document","source":"The Alabama carve-out is a Plan B detail, not mentioned for Plan F","expected_source":"plan-f","output":"Not stated in the document.\n\nThe excerpts only cover Plan B (Auburn University HDHP); no information about Plan F is provided.","pass":true,"retrieval_pass":false,"retrieved":["plan-b","plan-b","plan-b","plan-b","plan-b"]},{"id":83,"question":"Under Plan E, is coverage limited to CalPERS Access+ specialist self-referrals?","expected":"Not stated in the document","source":"Access+ self-referral is a Plan F (CalPERS) detail, not mentioned for Plan E","expected_source":"plan-e","output":"Not stated in the document\n\nThe excerpt for Plan E (Cochise Combined Trust EPO) only discusses children's eye exam coverage, with no mention of Access+ specialist self-referrals, which is a feature specific to Plan F (CalPERS Access+ HMO).","pass":true,"retrieval_pass":true,"retrieved":["plan-f","plan-f","plan-a","plan-e","plan-f"]},{"id":84,"question":"Does Plan A cap wellness care spending at $750 per plan participant for services not covered by healthcare reform?","expected":"Not stated in the document","source":"The $750 wellness cap is a Plan E (Cochise) detail, not mentioned for Plan A","expected_source":"plan-a","output":"Not stated in the document.\nThe provided excerpts for Plan A only cover the out-of-pocket limit exclusions, with no information about a $750 wellness care cap.","pass":true,"retrieval_pass":true,"retrieved":["plan-e","plan-d","plan-a","plan-f","plan-f"]},{"id":85,"question":"Maria just moved to Illinois for a new state government job and is excited about the change of scenery. Focusing on her new Plan C coverage, what is the copay for an emergency room visit?","expected":"$275","source":"Plan C: emergency room care $275 copay","expected_source":"plan-c","output":"$275 copay/visit\n\nThis is from Plan C (Illinois State Employees HMO), where emergency room care costs $275 copay/visit regardless of whether it's in-network or out-of-network.","pass":true,"retrieval_pass":true,"retrieved":["plan-c","plan-e","plan-d","plan-c","plan-e"]},{"id":86,"question":"After years of using Plan D's benefits for his kids, Mark was surprised dental wasn't included \u2014 but that's a story for another day. Focusing back on Plan D, what is this plan's out-of-network family deductible?","expected":"$3,000","source":"Plan D: out-of-network deductible $3,000 family","expected_source":"plan-d","output":"$3,000\n\nPlan D (Northwestern University PPO) lists an out-of-network family deductible of $3,000 per calendar year.","pass":true,"retrieval_pass":true,"retrieved":["plan-b","plan-c","plan-d","plan-b","plan-a"]},{"id":87,"question":"Which plan is the best one to choose?","expected":"Not stated in the document","source":"The documents don't rank or recommend a best plan","expected_source":"","output":"Not stated in the document\n\nThe excerpts provide isolated facts about deductibles, network rules, and out-of-pocket limits for different plans, but do not state which plan is \"best,\" as that depends on individual needs not addressed in these excerpts.","pass":true,"retrieval_pass":true,"retrieved":[]},{"id":88,"question":"Is Plan B's HDHP more affordable than Plan E's EPO?","expected":"Not stated in the document","source":"Premiums (the main affordability factor) aren't stated in either document","expected_source":"","output":"Not stated in the document\n\nThe excerpts only provide Plan E's out-of-pocket limit ($9,100/$18,200) but contain no cost figures (premiums, deductibles, out-of-pocket limits, etc.) for Plan B, so an affordability comparison cannot be made.","pass":true,"retrieval_pass":true,"retrieved":[]}];
+
+function renderStats() {
+  const scored = DATA.filter(d => d.pass !== undefined);
+  const pending = DATA.length - scored.length;
+  const total = scored.length;
+  const passed = scored.filter(d => d.pass).length;
+  const failed = total - passed;
+  const acc = total ? ((passed / total) * 100).toFixed(0) : '—';
+  const retrievalScored = DATA.filter(d => d.retrieval_pass !== undefined);
+  const retrievalPassed = retrievalScored.filter(d => d.retrieval_pass).length;
+  const retrievalAcc = retrievalScored.length ? ((retrievalPassed / retrievalScored.length) * 100).toFixed(0) : '—';
+
+  document.getElementById('stats').innerHTML = `
+    <div class="stat accuracy"><div class="num">${acc}%</div><div class="label">Answer accuracy</div></div>
+    <div class="stat accuracy"><div class="num">${retrievalAcc}%</div><div class="label">Retrieval accuracy</div></div>
+    <div class="stat"><div class="num">${DATA.length}</div><div class="label">Questions</div></div>
+    <div class="stat"><div class="num" style="color:var(--pass)">${passed}</div><div class="label">Passed</div></div>
+    <div class="stat"><div class="num" style="color:var(--fail)">${failed}</div><div class="label">Failed</div></div>
+    ${pending ? `<div class="stat"><div class="num" style="color:var(--muted)">${pending}</div><div class="label">Pending</div></div>` : ''}
+  `;
+}
+
+function renderRows(filter, query) {
+  const rowsEl = document.getElementById('rows');
+  const q = (query || '').toLowerCase().trim();
+
+  const filtered = DATA.filter(d => {
+    const isPending = d.pass === undefined;
+    if (filter === 'pass' && (!isPending && !d.pass)) return false;
+    if (filter === 'pass' && isPending) return false;
+    if (filter === 'fail' && (isPending || d.pass)) return false;
+    if (filter === 'pending' && !isPending) return false;
+    if (q) {
+      const hay = (d.question + ' ' + d.expected + ' ' + (d.output || '')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('empty').style.display = filtered.length ? 'none' : 'block';
+
+  rowsEl.innerHTML = filtered.map(d => {
+    const isPending = d.pass === undefined;
+    const badgeClass = isPending ? 'pending' : (d.pass ? 'pass' : 'fail');
+    const badgeText = isPending ? 'PENDING' : (d.pass ? 'PASS' : 'FAIL');
+    const outputHtml = isPending
+      ? 'Pending — not yet run against a live model.'
+      : escapeHtml(d.output);
+    const hasRetrieval = d.retrieval_pass !== undefined;
+    const retBadgeClass = !hasRetrieval ? 'pending' : (d.retrieval_pass ? 'pass' : 'fail');
+    const retBadgeText = !hasRetrieval ? '' : (d.retrieval_pass ? 'RETRIEVAL OK' : 'RETRIEVAL MISS');
+    const retrievedHtml = (d.retrieved && d.retrieved.length)
+      ? d.retrieved.map(s => escapeHtml(s)).join(', ')
+      : '(no chunks retrieved, or not applicable)';
+    return `
+    <div class="row" data-id="${d.id}">
+      <div class="row-head" onclick="this.parentElement.classList.toggle('open')">
+        <span class="row-id">#${d.id}</span>
+        <span class="row-q">${escapeHtml(d.question)}</span>
+        <span class="exp" title="${escapeHtml(d.expected)}">expected: ${escapeHtml(d.expected)}</span>
+        ${hasRetrieval ? `<span class="badge ${retBadgeClass}">${retBadgeText}</span>` : ''}
+        <span class="badge ${badgeClass}">${badgeText}</span>
+        <span class="chev">▶</span>
+      </div>
+      <div class="row-body">
+        <div class="field">
+          <div class="k">Answer key source</div>
+          <div class="v">${escapeHtml(d.source)}</div>
+        </div>
+        <div class="field">
+          <div class="k">Expected retrieval source</div>
+          <div class="v">${d.expected_source ? escapeHtml(d.expected_source) : '(no single expected document — absent-fact or ambiguous question)'}</div>
+        </div>
+        <div class="field">
+          <div class="k">Actually retrieved (top 5, highest similarity first)</div>
+          <div class="v">${retrievedHtml}</div>
+        </div>
+        <div class="field">
+          <div class="k">Model output</div>
+          <div class="v mono">${outputHtml}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  const div = document.createElement('div');
+  div.textContent = s;
+  return div.innerHTML;
+}
+
+let currentFilter = 'all';
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    renderRows(currentFilter, document.getElementById('search').value);
+  });
+});
+document.getElementById('search').addEventListener('input', (e) => {
+  renderRows(currentFilter, e.target.value);
+});
+
+renderStats();
+renderRows('all', '');
+
+// --- Live RAG demo: "Ask the benefits library" ---
+const EVAL_PROXY_URL = 'https://eval-proxy.stephrpawlowski.workers.dev';
+
+async function askRagLibrary() {
+  const btn = document.getElementById('rag-ask-btn');
+  const resultEl = document.getElementById('rag-result');
+  const question = document.getElementById('rag-question').value.trim();
+
+  resultEl.classList.add('show');
+  if (!question) {
+    resultEl.innerHTML = '<div class="qa-error">Ask a question first.</div>';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Retrieving…';
+  resultEl.innerHTML = '<div>Embedding your question, retrieving matching chunks, then calling claude-sonnet-5…</div>';
+
+  try {
+    const res = await fetch(EVAL_PROXY_URL + '/benefits-rag', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      resultEl.innerHTML = `<div class="qa-error">${escapeHtml(data.error || 'Something went wrong. Try again shortly.')}</div>`;
+      return;
+    }
+
+    const chips = (data.retrieved || [])
+      .map(r => `<span class="qa-chip">${escapeHtml(r.label)} · ${escapeHtml(r.section)} <span class="score">${r.score.toFixed(2)}</span></span>`)
+      .join('');
+
+    resultEl.innerHTML = `
+      <div class="qa-answer">${escapeHtml(data.answer || '')}</div>
+      <div class="qa-explanation">${escapeHtml(data.explanation || '')}</div>
+      <div class="qa-retrieved-label">Retrieved chunks (highest similarity first)</div>
+      <div>${chips}</div>
+    `;
+  } catch (err) {
+    resultEl.innerHTML = '<div class="qa-error">Request failed — the proxy may be temporarily unavailable.</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ask';
+  }
+}
+
+document.getElementById('rag-ask-btn').addEventListener('click', askRagLibrary);
+</script>
+</body>
+</html>
